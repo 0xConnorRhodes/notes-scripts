@@ -43,7 +43,7 @@ if #note > 0 then
 end
 
 if not file_exists(filepath) then
-    local file = io.open(filename, "w")
+    local file = io.open(filepath, "w")
     file:write(formattedContent)
     file:close()
     print('wrote: '..filename)
