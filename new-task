@@ -1,10 +1,10 @@
 if os.getenv('HOSTNAME') == 'devct' then
-    notes_dir = os.getenv("HOME")..'/notes'
+    notesPath = os.getenv("HOME")..'/notes'
 elseif os.getenv("TERMUX_APP_PID") then
-    notes_dir = os.getenv("HOME")..'/storage/dcim/zk_notes'
+    notesPath = os.getenv("HOME")..'/storage/dcim/zk_notes'
 end
 
-print(notes_dir)
+print(notesPath)
 
 local function get_input(prompt)
     io.write(prompt..': ')
@@ -26,7 +26,7 @@ if #task_name == 0 then
 end
 
 local filename = '✅ '..task_name..'.md'
-local filepath = notes_dir..'/'..filename
+local filepath = notesPath..'/'..filename
 
 local formattedContent = [[]]
 
