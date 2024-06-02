@@ -38,7 +38,7 @@ local function findTaskReferences(directory, pattern)
     local p = io.popen('ls "'..directory..'"/*.md')
 
     for file in p:lines() do
-        local grep_command = 'rg -F -l -q "'..pattern..'" "'..file..'"'
+        local grep_command = 'rg -F -l -q --color=never "'..pattern..'" "'..file..'"'
         if os.execute(grep_command) then
             table.insert(files, file)
         end
