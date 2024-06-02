@@ -38,8 +38,7 @@ local function findTaskReferences(directory, pattern)
     local p = io.popen('ls "'..directory..'"/*.md')
 
     for file in p:lines() do
-        -- local grep_command = 'cat "'..file..'" | grep -q "'..pattern..'"'
-        local grep_command = 'grep -F -l -r -q "'..pattern..'" "'..file..'"'
+        local grep_command = 'rg -F -l -q "'..pattern..'" "'..file..'"'
         if os.execute(grep_command) then
             table.insert(files, file)
         end
@@ -53,12 +52,10 @@ function moveDoneFile()
     -- should return new relative path from the notes directory to the _done folder
 end
 
-print(selectedFile)
-
 local files = findTaskReferences(notesPath, generateOriginalLink(selectedFile))
 -- print(generateOriginalLink(selectedFile))
 
-for _, file in ipairs(files) do
+for _, file in pairs(files) do
     print(file)
 end
 
