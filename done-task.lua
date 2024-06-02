@@ -1,3 +1,4 @@
+local notesPath = ""
 if os.getenv('HOSTNAME') == 'devct' then
     notesPath = os.getenv("HOME")..'/notes'
 elseif os.getenv("TERMUX_APP_PID") then
@@ -12,7 +13,6 @@ local function getFiles()
     end
     return files
 end
-
 
 local function generateOriginalLink(input_string)
     -- Remove the file extension from the string
