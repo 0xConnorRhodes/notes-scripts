@@ -34,19 +34,34 @@ local function generateOriginalLink(input_string)
 end
 
 local function findTaskReferences(directory, pattern)
-    local files = {}
-    local p = io.popen('ls "'..directory..'"/*.md')
+    local grep_command = 'rg -F -l --color=never "'..pattern..'" "'..directory..'"'
+    local handle = io.popen(grep_command)
+    local matching_files = handle:read("*a")
+    handle:close()
 
-    for file in p:lines() do
-        local grep_command = 'rg -F -l -q --color=never "'..pattern..'" "'..file..'"'
-        if os.execute(grep_command) then
-            table.insert(files, file)
+    local matching_files_table = {}
+    for line in matching_files:gmatch("([^\n]*)\n?") do
+        if line ~= "" then
+            table.insert(matching_files_table, line)
         end
     end
 
-    p:close()
-    return files
+    return matching_files_table
 end
+-- local function findTaskReferences(directory, pattern)
+--     local files = {}
+--     local p = io.popen('ls "'..directory..'"/*.md')
+
+--     for file in p:lines() do
+--         local grep_command = 'rg -F -l -q --color=never "'..pattern..'" "'..file..'"'
+--         if os.execute(grep_command) then
+--             table.insert(files, file)
+--         end
+--     end
+
+--     p:close()
+--     return files
+-- end
 
 function moveDoneFile()
     -- should return new relative path from the notes directory to the _done folder
