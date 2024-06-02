@@ -47,17 +47,10 @@ function moveDoneFile()
 end
 
 -- BEGIN SCRIPT LOGIC
--- Get the list of files
-local files = getFiles()
-
 -- Prepare a string with all file names for fzf input
-local filesString = table.concat(files, '\n')
-
--- Run fzf to let the user select a file
+local filesString = table.concat(getFiles(), '\n')
 local selectedFile = io.popen('echo "' .. filesString .. '" | fzf'):read()
-
 local files = findTaskReferences(notesPath, generateOriginalLink(selectedFile))
--- print(generateOriginalLink(selectedFile))
 
 -- DEBUG
 for _, file in pairs(files) do
