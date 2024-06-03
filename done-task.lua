@@ -1,3 +1,4 @@
+-- CONFIG
 local notesPath = ""
 if os.getenv('HOSTNAME') == 'devct' then
     notesPath = os.getenv("HOME")..'/notes'
@@ -5,9 +6,10 @@ elseif os.getenv("TERMUX_APP_PID") then
     notesPath = os.getenv("HOME")..'/storage/dcim/zk_notes'
 end
 
-local function getFiles()
+-- FUNCTIONS
+local function getFiles(folder)
     local files = {}
-    for file in io.popen('ls ' .. notesPath .. '/✅*'):lines() do
+    for file in io.popen('ls '..folder..'/✅*'):lines() do
         local fileName = file:match(".+/([^/]+)$")  -- Extract only the file name
         table.insert(files, fileName)
     end
@@ -22,6 +24,12 @@ local function generateOriginalLink(input_string)
     local result = "[["..transformedString.."]]"
     
     return result
+end
+
+local function generateDoneFilename(input_string)
+    local date = os.date("%y%m%d")
+    local done_file = string.gsub(input_string, "✅ ", date..'-')
+    return done_file
 end
 
 local function findTaskReferences(directory, pattern)
@@ -42,19 +50,31 @@ local function findTaskReferences(directory, pattern)
     return matching_files_table
 end
 
-function moveDoneFile()
+local function renameTaskReferences(note_table, task_link, done_file)
+    local escaped_str = task_link:gsub("%[", "\\["):gsub("%]", "\\]")
+    local replacement_str = '\\[\\[_done\\/'..done_file:gsub("%.md$", "")..'\\]\\]'
+
+    for _, note in ipairs(note_table) do
+        local sed_cmd = "sed -i 's/"..escaped_str.."/"..replacement_str.."/g'"..' "'..note..'"'
+        os.execute(sed_cmd)
+    end
+end
+
+-- TODO
+local function moveDoneFile(file, folder)
     -- should return new relative path from the notes directory to the _done folder
 end
 
--- BEGIN SCRIPT LOGIC
--- Prepare a string with all file names for fzf input
-local filesString = table.concat(getFiles(), '\n')
-local selectedFile = io.popen('echo "' .. filesString .. '" | fzf'):read()
-local files = findTaskReferences(notesPath, generateOriginalLink(selectedFile))
+-- SCRIPT LOGIC
+local filesString = table.concat(getFiles(notesPath), '\n') -- prepare string for fzf input
+local selectedFile = io.popen('echo "'..filesString..'" | fzf'):read()
+local task_link = generateOriginalLink(selectedFile)
+local done_filename = generateDoneFilename(selectedFile)
+local files = findTaskReferences(notesPath, task_link)
+
+-- renameTaskReferences(files, task_link, done_filename)
+-- moveDoneFile(selectedFile, notesPath)
 
 -- DEBUG
-for _, file in pairs(files) do
-    print(file)
-end
 
 -- vim:syntax=lua
