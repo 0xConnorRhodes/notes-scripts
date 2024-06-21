@@ -16,9 +16,9 @@ local function getFiles(folder)
     return files
 end
 
-local function generateOriginalLink(input_string)
+local function generateOriginalLink(inputString)
     -- Remove the file extension from the string
-    local transformedString = input_string:gsub("%.md$", "")
+    local transformedString = inputString:gsub("%.md$", "")
     
     -- Surround the transformed string with [[ and ]]
     local result = "[["..transformedString.."]]"
@@ -26,9 +26,9 @@ local function generateOriginalLink(input_string)
     return result
 end
 
-local function generateDoneFilename(input_string)
+local function generateDoneFilename(inputString)
     local date = os.date("%y%m%d")
-    local done_file = string.gsub(input_string, "✅ ", date..'-')
+    local done_file = string.gsub(inputString, "✅ ", date..'-')
     return done_file
 end
 
@@ -50,19 +50,21 @@ local function findTaskReferences(directory, pattern)
     return matching_files_table
 end
 
-local function renameTaskReferences(note_table, task_link, done_file)
-    local escaped_str = task_link:gsub("%[", "\\["):gsub("%]", "\\]")
-    local replacement_str = '\\[\\[_done\\/'..done_file:gsub("%.md$", "")..'\\]\\]'
+local function renameTaskReferences(noteTable, taskLink, doneFile)
+    local escaped_str = taskLink:gsub("%[", "\\["):gsub("%]", "\\]")
+    local replacement_str = '\\[\\[_done\\/'..doneFile:gsub("%.md$", "")..'\\]\\]'
 
-    for _, note in ipairs(note_table) do
+    for _, note in ipairs(noteTable) do
         local sed_cmd = "sed -i 's/"..escaped_str.."/"..replacement_str.."/g'"..' "'..note..'"'
         os.execute(sed_cmd)
     end
 end
 
--- TODO
-local function moveDoneFile(file, folder)
-    -- should return new relative path from the notes directory to the _done folder
+local function moveDoneFile(startFile, endFile, folder)
+    local sourcePath = folder..'/'..startFile
+    local donePath = folder..'/_done/'..endFile
+    local command = string.format("mv '%s' '%s'", sourcePath, donePath)
+    os.execute(command)
 end
 
 -- SCRIPT LOGIC
@@ -72,9 +74,8 @@ local task_link = generateOriginalLink(selectedFile)
 local done_filename = generateDoneFilename(selectedFile)
 local files = findTaskReferences(notesPath, task_link)
 
--- renameTaskReferences(files, task_link, done_filename)
--- moveDoneFile(selectedFile, notesPath)
-
--- DEBUG
+renameTaskReferences(files, task_link, done_filename)
+moveDoneFile(selectedFile, done_filename, notesPath)
+print(selectedFile:gsub('.md', '')..' marked done.')
 
 -- vim:syntax=lua
