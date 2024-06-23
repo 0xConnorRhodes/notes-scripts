@@ -69,7 +69,7 @@ end
 
 -- SCRIPT LOGIC
 local filesString = table.concat(getFiles(notesPath), '\n') -- prepare string for fzf input
-local selectedFile = io.popen('echo "'..filesString..'" | fzf'):read()
+local selectedFile = io.popen('echo "'..filesString..'" | fzf --prompt=DONE:'):read()
 local task_link = generateOriginalLink(selectedFile)
 local done_filename = generateDoneFilename(selectedFile)
 local files = findTaskReferences(notesPath, task_link)
