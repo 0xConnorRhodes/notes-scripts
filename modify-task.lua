@@ -16,17 +16,19 @@ local function getFiles(folder)
     return files
 end
 
+local function fzfListFiles(filesString, taskOperation)
+    return io.popen('echo "'..filesString..'" | fzf --prompt='..taskOperation:upper()..':'):read()
+end
+
 local function generateOriginalLink(inputString)
-    -- Remove the file extension from the string
+    -- return link format in the body of the note: [[✅ task name]]
     local transformedString = inputString:gsub("%.md$", "")
-
-    -- Surround the transformed string with [[ and ]]
     local result = "[["..transformedString.."]]"
-
     return result
 end
 
-local function generateDoneFilename(inputString)
+local function generateArchiveFilename(inputString)
+    -- return link format to archived task: [[<completion-date>-task name]]
     local date = os.date("%y%m%d")
     local done_file = string.gsub(inputString, "✅ ", date..'-')
     return done_file
@@ -68,18 +70,31 @@ local function moveDoneFile(startFile, endFile, folder)
 end
 
 -- LOGIC
+local taskOperation = arg[1]
 if #arg == 0 then
     print('No argument specified')
     print("Usage: modify-task.lua [done|drop|undone|undrop]")
 
-elseif arg[1] == 'done' then
+elseif taskOperation == 'done' then
     local filesString = table.concat(getFiles(notesPath), '\n') -- prepare string for fzf input
-    local selectedFile = io.popen('echo "'..filesString..'" | fzf --prompt=DONE:'):read()
+    local selectedFile = fzfListFiles(filesString, taskOperation)
     local task_link = generateOriginalLink(selectedFile)
-    local done_filename = generateDoneFilename(selectedFile)
+    local done_filename = generateArchiveFilename(selectedFile)
     local files = findTaskReferences(notesPath, task_link)
 
     renameTaskReferences(files, task_link, done_filename)
     moveDoneFile(selectedFile, done_filename, notesPath)
-    print(selectedFile:gsub('.md', '')..' marked done.')
+    print(selectedFile:gsub('.md', '')..' marked '..taskOperation..'.')
+elseif taskOperation == 'drop' then
+    local filesString = table.concat(getFiles(notesPath), '\n')
+    local selectedFile = fzfListFiles(filesString, taskOperation)
+    local task_link = generateOriginalLink(selectedFile)
+    local done_filename = generateArchiveFilename(selectedFile)
+    local files = findTaskReferences(notesPath, task_link)
+
+    renameTaskReferences(files, task_link, done_filename)
+    moveDoneFile(selectedFile, done_filename, notesPath)
+    print(selectedFile:gsub('.md', '')..' marked '..taskOperation..'.')
+elseif taskOperation == 'undone' then
+elseif taskOperation == 'undrop' then
 end
