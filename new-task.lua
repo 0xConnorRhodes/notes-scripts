@@ -1,9 +1,12 @@
+-- CONFIG
+local notesPath = ''
 if os.getenv('HOSTNAME') == 'devct' then
     notesPath = os.getenv("HOME")..'/notes'
 elseif os.getenv("TERMUX_APP_PID") then
     notesPath = os.getenv("HOME")..'/storage/dcim/zk_notes'
 end
 
+-- FUNCTIONS
 local function get_input(prompt)
     io.write(prompt..': ')
     return io.read():gsub('%s$', '')
@@ -14,6 +17,7 @@ function file_exists(name)
     if f~=nil then io.close(f) return true else return false end
 end
 
+-- LOGIC
 print('Adding New Task:')
 local task_name = get_input('task')
 local note = get_input('note')
