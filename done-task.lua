@@ -19,10 +19,10 @@ end
 local function generateOriginalLink(inputString)
     -- Remove the file extension from the string
     local transformedString = inputString:gsub("%.md$", "")
-    
+
     -- Surround the transformed string with [[ and ]]
     local result = "[["..transformedString.."]]"
-    
+
     return result
 end
 
