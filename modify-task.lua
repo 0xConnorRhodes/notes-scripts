@@ -103,5 +103,8 @@ elseif taskOperation == 'drop' then
     moveFile(taskOperation, selectedFile, done_filename, notesPath)
     print('Dropped: '..selectedFile:gsub('.md', ''))
 elseif taskOperation == 'undone' then
+    -- select from done files
+    -- generate what the link was before converting ✅ to date
+    -- move file back into root notes dir
 elseif taskOperation == 'undrop' then
 end
