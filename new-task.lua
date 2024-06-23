@@ -4,8 +4,6 @@ elseif os.getenv("TERMUX_APP_PID") then
     notesPath = os.getenv("HOME")..'/storage/dcim/zk_notes'
 end
 
-print(notesPath)
-
 local function get_input(prompt)
     io.write(prompt..': ')
     return io.read():gsub('%s$', '')
@@ -16,6 +14,7 @@ function file_exists(name)
     if f~=nil then io.close(f) return true else return false end
 end
 
+print('Adding New Task:')
 local task_name = get_input('task')
 local note = get_input('note')
 local due_date = get_input('due')
@@ -50,5 +49,3 @@ if not file_exists(filepath) then
 else
     print('file already exists')
 end
-
--- vim:syntax=lua
