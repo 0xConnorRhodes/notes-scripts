@@ -70,6 +70,7 @@ end
 -- LOGIC
 if #arg == 0 then
     print('No argument specified')
+    print("Usage: modify-task.lua [done|drop|undone|undrop]")
 
 elseif arg[1] == 'done' then
     local filesString = table.concat(getFiles(notesPath), '\n') -- prepare string for fzf input
