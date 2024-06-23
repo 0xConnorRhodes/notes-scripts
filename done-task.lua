@@ -77,5 +77,3 @@ local files = findTaskReferences(notesPath, task_link)
 renameTaskReferences(files, task_link, done_filename)
 moveDoneFile(selectedFile, done_filename, notesPath)
 print(selectedFile:gsub('.md', '')..' marked done.')
-
--- vim:syntax=lua
