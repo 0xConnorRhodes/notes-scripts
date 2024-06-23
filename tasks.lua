@@ -1,11 +1,17 @@
 -- string to order options in fzf
 local options_str = [[new task
-done task]]
+done task
+drop task
+undone task
+undrop task]]
 
 -- table to map options to filenames, arguments
 local options_tbl = {
+    ['new task'] = 'new-task.lua',
     ['done task'] = 'modify-task.lua done',
-    ['new task'] = 'new-task.lua'
+    ['drop task'] = 'modify-task drop',
+    ['undone task'] = 'modify-task undone',
+    ['undrop task'] = 'modify-task undrop'
 }
 
 local notesScriptsDir = os.getenv('HOME')..'/code/notes-scripts/'
