@@ -83,4 +83,3 @@ elseif arg[1] == 'done' then
     moveDoneFile(selectedFile, done_filename, notesPath)
     print(selectedFile:gsub('.md', '')..' marked done.')
 end
-
