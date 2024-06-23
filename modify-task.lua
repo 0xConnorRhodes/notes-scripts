@@ -21,7 +21,7 @@ local function fzfListFiles(filesString, taskOperation)
 end
 
 local function generateOriginalLink(inputString)
-    -- return link format in the body of the note: [[✅ task name]]
+    -- take filename and return [[✅ wikilink]]
     local transformedString = inputString:gsub("%.md$", "")
     local result = "[["..transformedString.."]]"
     return result
@@ -62,11 +62,18 @@ local function renameTaskReferences(noteTable, taskLink, doneFile)
     end
 end
 
-local function moveDoneFile(startFile, endFile, folder)
-    local sourcePath = folder..'/'..startFile
-    local donePath = folder..'/_done/'..endFile
-    local command = string.format("mv '%s' '%s'", sourcePath, donePath)
-    os.execute(command)
+local function moveFile(operation, startFile, endFile, folder)
+    if operation == 'done' then
+        local sourcePath = folder..'/'..startFile
+        local destPath = folder..'/_done/'..endFile
+        local command = string.format("mv '%s' '%s'", sourcePath, destPath)
+        os.execute(command)
+    elseif operation == 'drop' then
+        local sourcePath = folder..'/'..startFile
+        local destPath = folder..'/_done/_dropped/'..endFile
+        local command = string.format("mv '%s' '%s'", sourcePath, destPath)
+        os.execute(command)
+    end
 end
 
 -- LOGIC
@@ -83,7 +90,7 @@ elseif taskOperation == 'done' then
     local files = findTaskReferences(notesPath, task_link)
 
     renameTaskReferences(files, task_link, done_filename)
-    moveDoneFile(selectedFile, done_filename, notesPath)
+    moveFile(taskOperation, selectedFile, done_filename, notesPath)
     print(selectedFile:gsub('.md', '')..' marked '..taskOperation..'.')
 elseif taskOperation == 'drop' then
     local filesString = table.concat(getFiles(notesPath), '\n')
@@ -93,8 +100,8 @@ elseif taskOperation == 'drop' then
     local files = findTaskReferences(notesPath, task_link)
 
     renameTaskReferences(files, task_link, done_filename)
-    moveDoneFile(selectedFile, done_filename, notesPath)
-    print(selectedFile:gsub('.md', '')..' marked '..taskOperation..'.')
+    moveFile(taskOperation, selectedFile, done_filename, notesPath)
+    print('Dropped: '..selectedFile:gsub('.md', ''))
 elseif taskOperation == 'undone' then
 elseif taskOperation == 'undrop' then
 end
