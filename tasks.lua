@@ -9,9 +9,9 @@ undrop task]]
 local options_tbl = {
     ['new task'] = 'new-task.lua',
     ['done task'] = 'modify-task.lua done',
-    ['drop task'] = 'modify-task drop',
-    ['undone task'] = 'modify-task undone',
-    ['undrop task'] = 'modify-task undrop'
+    ['drop task'] = 'modify-task.lua drop',
+    ['undone task'] = 'modify-task.lua undone',
+    ['undrop task'] = 'modify-task.lua undrop'
 }
 
 local notesScriptsDir = os.getenv('HOME')..'/code/notes-scripts/'
