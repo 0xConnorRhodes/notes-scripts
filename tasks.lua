@@ -4,7 +4,7 @@ done task]]
 
 -- table to map options to filenames, arguments
 local options_tbl = {
-    ['done task'] = 'done-task.lua',
+    ['done task'] = 'modify-task.lua done',
     ['new task'] = 'new-task.lua'
 }
 

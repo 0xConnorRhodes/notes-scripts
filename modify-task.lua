@@ -68,12 +68,18 @@ local function moveDoneFile(startFile, endFile, folder)
 end
 
 -- LOGIC
-local filesString = table.concat(getFiles(notesPath), '\n') -- prepare string for fzf input
-local selectedFile = io.popen('echo "'..filesString..'" | fzf --prompt=DONE:'):read()
-local task_link = generateOriginalLink(selectedFile)
-local done_filename = generateDoneFilename(selectedFile)
-local files = findTaskReferences(notesPath, task_link)
+if #arg == 0 then
+    print('No argument specified')
 
-renameTaskReferences(files, task_link, done_filename)
-moveDoneFile(selectedFile, done_filename, notesPath)
-print(selectedFile:gsub('.md', '')..' marked done.')
+elseif arg[1] == 'done' then
+    local filesString = table.concat(getFiles(notesPath), '\n') -- prepare string for fzf input
+    local selectedFile = io.popen('echo "'..filesString..'" | fzf --prompt=DONE:'):read()
+    local task_link = generateOriginalLink(selectedFile)
+    local done_filename = generateDoneFilename(selectedFile)
+    local files = findTaskReferences(notesPath, task_link)
+
+    renameTaskReferences(files, task_link, done_filename)
+    moveDoneFile(selectedFile, done_filename, notesPath)
+    print(selectedFile:gsub('.md', '')..' marked done.')
+end
+
