@@ -52,9 +52,15 @@ local function findTaskReferences(directory, pattern)
     return matching_files_table
 end
 
-local function renameTaskReferences(noteTable, taskLink, doneFile)
+local function renameTaskReferences(noteTable, operation, taskLink, doneFile)
+    local path = nil
+    if operation == 'done' then
+        path = '_done'
+    elseif operation == 'drop' then
+        path = '_done\\/_dropped'
+    end
     local escaped_str = taskLink:gsub("%[", "\\["):gsub("%]", "\\]")
-    local replacement_str = '\\[\\[_done\\/'..doneFile:gsub("%.md$", "")..'\\]\\]'
+    local replacement_str = '\\[\\['..path..'\\/'..doneFile:gsub("%.md$", "")..'\\]\\]'
 
     for _, note in ipairs(noteTable) do
         local sed_cmd = "sed -i 's/"..escaped_str.."/"..replacement_str.."/g'"..' "'..note..'"'
@@ -89,17 +95,17 @@ elseif taskOperation == 'done' then
     local done_filename = generateArchiveFilename(selectedFile)
     local files = findTaskReferences(notesPath, task_link)
 
-    renameTaskReferences(files, task_link, done_filename)
+    renameTaskReferences(files, 'done', task_link, done_filename)
     moveFile(taskOperation, selectedFile, done_filename, notesPath)
     print(selectedFile:gsub('.md', '')..' marked '..taskOperation..'.')
 elseif taskOperation == 'drop' then
     local filesString = table.concat(getFiles(notesPath), '\n')
     local selectedFile = fzfListFiles(filesString, taskOperation)
     local task_link = generateOriginalLink(selectedFile)
-    local done_filename = generateArchiveFilename(selectedFile)
+    local done_filename = selectedFile:gsub('✅ ', '')
     local files = findTaskReferences(notesPath, task_link)
 
-    renameTaskReferences(files, task_link, done_filename)
+    renameTaskReferences(files, 'drop', task_link, done_filename)
     moveFile(taskOperation, selectedFile, done_filename, notesPath)
     print('Dropped: '..selectedFile:gsub('.md', ''))
 elseif taskOperation == 'undone' then
