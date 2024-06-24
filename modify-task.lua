@@ -9,8 +9,8 @@ end
 -- FUNCTIONS
 local function getFiles(folder)
     local files = {}
-    for file in io.popen('ls '..folder..'/✅*'):lines() do
-        local fileName = file:match(".+/([^/]+)$")  -- Extract only the file name
+    for file in io.popen('ls '..folder):lines() do
+        local fileName = file:gsub(notesPath..'/', ''):gsub('.md$', '')
         table.insert(files, fileName)
     end
     return files
@@ -89,7 +89,7 @@ if #arg == 0 then
     print("Usage: modify-task.lua [done|drop|undone|undrop]")
 
 elseif taskOperation == 'done' then
-    local filesString = table.concat(getFiles(notesPath), '\n') -- prepare string for fzf input
+    local filesString = table.concat(getFiles(notesPath..'/✅*'), '\n') -- prepare string for fzf input
     local selectedFile = fzfListFiles(filesString, taskOperation)
     local task_link = generateOriginalLink(selectedFile)
     local done_filename = generateArchiveFilename(selectedFile)
@@ -99,7 +99,7 @@ elseif taskOperation == 'done' then
     moveFile(taskOperation, selectedFile, done_filename, notesPath)
     print(selectedFile:gsub('.md', '')..' marked '..taskOperation..'.')
 elseif taskOperation == 'drop' then
-    local filesString = table.concat(getFiles(notesPath), '\n')
+    local filesString = table.concat(getFiles(notesPath..'/✅*'), '\n')
     local selectedFile = fzfListFiles(filesString, taskOperation)
     local task_link = generateOriginalLink(selectedFile)
     local done_filename = selectedFile:gsub('✅ ', '')
@@ -113,4 +113,7 @@ elseif taskOperation == 'undone' then
     -- generate what the link was before converting ✅ to date
     -- move file back into root notes dir
 elseif taskOperation == 'undrop' then
+    local filesString = table.concat(getFiles(notesPath..'/_done/_dropped'), '\n')
+    local selectedFile = fzfListFiles(filesString, taskOperation)
+    print(selectedFile)
 end
