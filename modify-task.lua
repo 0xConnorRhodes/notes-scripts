@@ -17,7 +17,9 @@ local function getFiles(folder)
 end
 
 local function fzfListFiles(filesString, taskOperation)
-    return io.popen('echo "'..filesString..'" | fzf --prompt='..taskOperation:upper()..':'):read()
+    local fileName = io.popen('echo "'..filesString..'" | fzf --prompt='..taskOperation:upper()..':'):read()
+    local fileName = fileName..'.md'
+    return fileName
 end
 
 local function generateOriginalLink(inputString)
