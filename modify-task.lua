@@ -55,14 +55,8 @@ local function findTaskReferences(directory, pattern)
 end
 
 local function renameTaskReferences(noteTable, operation, taskLink, doneFile)
-    local path = nil
-    if operation == 'done' then
-        path = '_done'
-    elseif operation == 'drop' then
-        path = '_done\\/_dropped'
-    end
     local escaped_str = taskLink:gsub("%[", "\\["):gsub("%]", "\\]")
-    local replacement_str = '\\[\\['..path..'\\/'..doneFile:gsub("%.md$", "")..'\\]\\]'
+    local replacement_str = '\\[\\[_tk\\/'..operation..'\\/'..doneFile:gsub("%.md$", "")..'\\]\\]'
 
     for _, note in ipairs(noteTable) do
         local sed_cmd = "sed -i 's/"..escaped_str.."/"..replacement_str.."/g'"..' "'..note..'"'
@@ -71,17 +65,10 @@ local function renameTaskReferences(noteTable, operation, taskLink, doneFile)
 end
 
 local function moveFile(operation, startFile, endFile, folder)
-    if operation == 'done' then
-        local sourcePath = folder..'/'..startFile
-        local destPath = folder..'/_done/'..endFile
-        local command = string.format("mv '%s' '%s'", sourcePath, destPath)
-        os.execute(command)
-    elseif operation == 'drop' then
-        local sourcePath = folder..'/'..startFile
-        local destPath = folder..'/_done/_dropped/'..endFile
-        local command = string.format("mv '%s' '%s'", sourcePath, destPath)
-        os.execute(command)
-    end
+    local sourcePath = folder..'/'..startFile
+    local destPath = folder..'/_tk/'..operation..'/'..endFile
+    local command = string.format("mv '%s' '%s'", sourcePath, destPath)
+    os.execute(command)
 end
 
 -- LOGIC
@@ -90,26 +77,16 @@ if #arg == 0 then
     print('No argument specified')
     print("Usage: modify-task.lua [done|drop|undone|undrop]")
 
-elseif taskOperation == 'done' then
+elseif taskOperation == 'done' or taskOperation == 'drop' or taskOperation == 'hold' then
     local filesString = table.concat(getFiles(notesPath..'/✅*'), '\n') -- prepare string for fzf input
     local selectedFile = fzfListFiles(filesString, taskOperation)
     local task_link = generateOriginalLink(selectedFile)
     local done_filename = generateArchiveFilename(selectedFile)
     local files = findTaskReferences(notesPath, task_link)
 
-    renameTaskReferences(files, 'done', task_link, done_filename)
+    renameTaskReferences(files, taskOperation, task_link, done_filename)
     moveFile(taskOperation, selectedFile, done_filename, notesPath)
-    print(selectedFile:gsub('.md', '')..' marked '..taskOperation..'.')
-elseif taskOperation == 'drop' then
-    local filesString = table.concat(getFiles(notesPath..'/✅*'), '\n')
-    local selectedFile = fzfListFiles(filesString, taskOperation)
-    local task_link = generateOriginalLink(selectedFile)
-    local done_filename = selectedFile:gsub('✅ ', '')
-    local files = findTaskReferences(notesPath, task_link)
-
-    renameTaskReferences(files, 'drop', task_link, done_filename)
-    moveFile(taskOperation, selectedFile, done_filename, notesPath)
-    print('Dropped: '..selectedFile:gsub('.md', ''))
+    print(taskOperation:upper()..': '..selectedFile:gsub('.md', ''))
 elseif taskOperation == 'undone' then
     -- select from done files
     -- generate what the link was before converting ✅ to date
