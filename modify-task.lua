@@ -77,7 +77,9 @@ if #arg == 0 then
     print('No argument specified')
     print("Usage: modify-task.lua [done|drop|undone|undrop]")
 
-elseif taskOperation == 'done' or taskOperation == 'drop' or taskOperation == 'hold' then
+elseif taskOperation == 'done' or
+       taskOperation == 'drop' or
+       taskOperation == 'hold' then
     local filesString = table.concat(getFiles(notesPath..'/✅*'), '\n') -- prepare string for fzf input
     local selectedFile = fzfListFiles(filesString, taskOperation)
     local task_link = generateOriginalLink(selectedFile)
@@ -87,11 +89,12 @@ elseif taskOperation == 'done' or taskOperation == 'drop' or taskOperation == 'h
     renameTaskReferences(files, taskOperation, task_link, done_filename)
     moveFile(taskOperation, selectedFile, done_filename, notesPath)
     print(taskOperation:upper()..': '..selectedFile:gsub('.md', ''))
-elseif taskOperation == 'undone' then
+elseif taskOperation == 'undone' or
+       taskOperation == 'undrop' or
+       taskOperation == 'unhold' then
     -- select from done files
     -- generate what the link was before converting ✅ to date
     -- move file back into root notes dir
-elseif taskOperation == 'undrop' then
     local filesString = table.concat(getFiles(notesPath..'/_done/_dropped'), '\n')
     local selectedFile = fzfListFiles(filesString, taskOperation)
     print(selectedFile)
