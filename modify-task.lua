@@ -95,7 +95,7 @@ elseif taskOperation == 'undone' or
     -- select from done files
     -- generate what the link was before converting ✅ to date
     -- move file back into root notes dir
-    local filesString = table.concat(getFiles(notesPath..'/_done/_dropped'), '\n')
+    local filesString = table.concat(getFiles(notesPath..'/_tk/'..taskOperation:sub(3)), '\n')
     local selectedFile = fzfListFiles(filesString, taskOperation)
     print(selectedFile)
 end
