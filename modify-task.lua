@@ -30,8 +30,11 @@ local function generateOriginalLink(inputString)
 end
 
 local function generateArchiveFilename(inputString)
-    -- return link format to archived task: [[<completion-date>-task name]]
-    local date = os.date("%y%m%d")
+    local utcTime = os.time(os.date("!*t"))
+    local centralOffset = -6 * 3600
+    local centralTime = utcTime + centralOffset
+    local date = os.date("%y%m%d", centralTime)
+
     local done_file = string.gsub(inputString, "✅ ", date..'-')
     return done_file
 end
@@ -71,6 +74,14 @@ local function moveFile(operation, startFile, endFile, folder)
     os.execute(command)
 end
 
+local function unMoveFile(filePath, subFolder, startFile)
+    local sourcePath = filePath..'/_tk/'..subFolder..'/'..startFile
+    local destFile = '✅ '..startFile:sub(8)
+    local destPath = filePath..'/'..destFile
+    local command = string.format("mv '%s' '%s'", sourcePath, destPath)
+    os.execute(command)
+end
+
 -- LOGIC
 local taskOperation = arg[1]
 if #arg == 0 then
@@ -92,10 +103,10 @@ elseif taskOperation == 'done' or
 elseif taskOperation == 'undone' or
        taskOperation == 'undrop' or
        taskOperation == 'unhold' then
-    -- select from done files
-    -- generate what the link was before converting ✅ to date
-    -- move file back into root notes dir
-    local filesString = table.concat(getFiles(notesPath..'/_tk/'..taskOperation:sub(3)), '\n')
+    local subFolderName = taskOperation:sub(3)
+    local filesString = table.concat(getFiles(notesPath..'/_tk/'..subFolderName), '\n')
     local selectedFile = fzfListFiles(filesString, taskOperation)
-    print(selectedFile)
+    -- TODO: renameTaskReferences with correct *un* behavior
+    unMoveFile(notesPath, subFolderName, selectedFile)
+    print(taskOperation:upper()..': '..selectedFile:gsub('.md', ''))
 end
