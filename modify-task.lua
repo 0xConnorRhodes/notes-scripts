@@ -37,9 +37,13 @@ elseif taskOperation == 'done' or
 -- #endregion
 
 -- #region rename references
+-- [ ] generate the link to look for
+-- [ ] find files with that link
+-- [ ] replace that content in those files
 -- #endregion
 
 -- #region move file and print status
+-- [ ] move file
+-- [ ] print status
 -- #endregion
-
 end
