@@ -18,14 +18,16 @@ local options_tbl = {
 
 local notesScriptsDir = os.getenv('HOME')..'/code/notes-scripts/'
 
-local function presentChoices(choices_string)
-    local handle = io.popen('echo "'..choices_string..'" | fzf')
-    local choice = handle:read("*a")
+local choice = ''
+if arg[1] then
+    local handle = io.popen('echo "'..options_str..'" | fzf --query '..arg[1])
+    choice = handle:read("*a"):gsub("\n$", "") -- remove trailing newline
     handle:close()
-
-    return choice:gsub("\n$", "") -- remove trailing newline
+else
+    local handle = io.popen('echo "'..options_str..'" | fzf')
+    -- choice = handle:read("*a")
+    choice = handle:read("*a"):gsub("\n$", "") -- remove trailing newline
+    handle:close()
 end
-
-local choice = presentChoices(options_str)
 
 os.execute('lua '..notesScriptsDir..options_tbl[choice])
