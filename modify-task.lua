@@ -14,7 +14,7 @@ elseif taskOperation == 'done' or
        taskOperation == 'drop' or
        taskOperation == 'hold' then
 
--- #region select with fzf
+-- #region Select With Fzf -> table of filenames
     local fzfFilesTbl = {}
     for file in io.popen(string.format('ls %s/✅*', notesPath)):lines() do
         local fileName = file:gsub(notesPath..'/', ''):gsub('.md$', '')
@@ -28,15 +28,14 @@ elseif taskOperation == 'done' or
 
     local fileChoicesTbl = {}
     for line in fileChoicesStr:gmatch("([^\n]+)") do
-        table.insert(fileChoicesTbl, line:gsub('\n','')..'.md')
-    end
-
-    for _, v in pairs(fileChoicesTbl) do
-        print(v)
+        table.insert(fileChoicesTbl, line:gsub('\n','')..'') -- last concat needed to squash number returned by gsub
     end
 -- #endregion
 
 -- #region rename references
+    for _, v in pairs(fileChoicesTbl) do
+        print(v)
+    end
 -- [ ] generate the link to look for
 -- [ ] find files with that link
 -- [ ] replace that content in those files
@@ -46,4 +45,4 @@ elseif taskOperation == 'done' or
 -- [ ] move file
 -- [ ] print status
 -- #endregion
-end
+end -- end of elseif done|drop|hold
