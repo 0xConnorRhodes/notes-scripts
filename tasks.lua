@@ -3,6 +3,7 @@ local options_str = [[new task
 done task
 drop task
 hold task
+review tasks
 undone task
 undrop task
 unhold task]]
@@ -13,6 +14,7 @@ local options_tbl = {
     ['done task'] = 'modify-task.lua done',
     ['drop task'] = 'modify-task.lua drop',
     ['hold task'] = 'modify-task.lua hold',
+    ['review tasks'] = 'reivew-tasks.lua',
     ['undone task'] = 'modify-task.lua undone',
     ['undrop task'] = 'modify-task.lua undrop',
     ['unhold task'] = 'modify-task.lua unhold'
