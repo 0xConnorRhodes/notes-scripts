@@ -32,7 +32,7 @@ elseif taskOperation == 'done' or
     end
 -- #endregion
 
--- #region rename references
+-- #region rename references, move file
     for _, task in pairs(fileChoicesTbl) do
         local currentLink = "[["..task.."]]"
         local utcTime = os.time(os.date("!*t"))
@@ -56,12 +56,16 @@ elseif taskOperation == 'done' or
         local sedCmd = ("sed -i 's/%s/%s/g' '%s'"):format(escapedStr, replacementStr, line)
         os.execute(sedCmd)
     end
-    -- [ ] move file
+    -- move file
     local sourcePath = notesPath..'/'..task..'.md'
     local destPath = notesPath..'/_tk/'..taskOperation..'/'..doneFilename..'.md'
     local mvCmd = ("mv '%s' '%s'"):format(sourcePath, destPath)
     os.execute(mvCmd)
-
     print(taskOperation:upper()..': '..task)
     end
-end -- end elseif done|drop|hold
+-- #endregion
+-- end elseif done|drop|hold
+elseif taskOperation == 'undone' or
+       taskOperation == 'undrop' or
+       taskOperation == 'unhold' then
+end
