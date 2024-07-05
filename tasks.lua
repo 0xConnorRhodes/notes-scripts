@@ -4,7 +4,8 @@ done task
 drop task
 hold task
 undone task
-undrop task]]
+undrop task
+unhold task]]
 
 -- table to map options to filenames, arguments
 local options_tbl = {
@@ -13,7 +14,8 @@ local options_tbl = {
     ['drop task'] = 'modify-task.lua drop',
     ['hold task'] = 'modify-task.lua hold',
     ['undone task'] = 'modify-task.lua undone',
-    ['undrop task'] = 'modify-task.lua undrop'
+    ['undrop task'] = 'modify-task.lua undrop',
+    ['unhold task'] = 'modify-task.lua unhold'
 }
 
 local notesScriptsDir = os.getenv('HOME')..'/code/notes-scripts/'
