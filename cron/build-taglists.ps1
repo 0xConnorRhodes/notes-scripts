@@ -7,11 +7,6 @@ function buildFileList {
 
     $command = "rg -l '$Query' $NotesDir"
     $files = Invoke-Expression $command
-    # $files = buildFileList -Query '#vaccounts' -NotesFolder $notesDir
-
-    # $listName = 
-
-    # $outputFilePath = Join-Path -Path $NotesFolder -ChildPath '.' + 
 
     foreach ($file in $files) {
         # Add-Content -Path $outputFilePath
