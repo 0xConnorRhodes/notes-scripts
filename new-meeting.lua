@@ -5,12 +5,45 @@ if os.getenv('HOSTNAME') == 'devct' then
 elseif os.getenv("TERMUX_APP_PID") then
     notesPath = os.getenv("HOME")..'/storage/dcim/notes'
 end
+
+local template = [[{{account_link}}
+# Folks
+
+# Context
+
+# Log]]
 -- #endregion
 
--- TODO: pick account
+-- #region Generate Note Content
+local account = (
+    io.popen(
+        ('cat "%s" | fzf'):format(notesPath..'/.vaccounts.list')
+    ):read('*a'):gsub('\n$', '')
+)
 
--- TODO: generate meeting filename
+if #account == 0 then
+    os.exit(1)
+end
 
--- TODO: create meeting file with link to parrent account
+local date = os.date("%y%m%d", os.time())
 
--- TODO: add link to meeting in the # meetings section of corresponding account note
+io.write('desc: ')
+local description = io.read():gsub('%s$', '')
+
+local noteName = ('mt_%s %s %s.md'):format(date, account, description)
+-- #endregion
+
+-- #region Render Template and Write Content
+local outputFilePath = notesPath..'/'..noteName
+
+local renderedContent = template:gsub('{{account_link}}', '[['..account..']]')
+
+local file = io.open(outputFilePath, "w")
+if file then
+    file:write(renderedContent)
+    file:close()
+    print(noteName..' written successfully.')
+else
+    print("Error opening file for writing.")
+end
+--#endregion
