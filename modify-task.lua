@@ -2,7 +2,7 @@ local notesPath = ""
 if os.getenv('HOSTNAME') == 'devct' then
     notesPath = os.getenv("HOME")..'/notes'
 elseif os.getenv("TERMUX_APP_PID") then
-    notesPath = os.getenv("HOME")..'/storage/dcim/zk_notes'
+    notesPath = os.getenv("HOME")..'/storage/dcim/notes'
 end
 
 local taskOperation = arg[1]
@@ -14,7 +14,7 @@ elseif taskOperation == 'done' or
        taskOperation == 'hold' then
 -- #region Select With Fzf -> table of tasks
     local fzfFilesTbl = {}
-    for file in io.popen(string.format('ls %s/✅*', notesPath)):lines() do
+    for file in io.popen(string.format('ls %s/tk_*', notesPath)):lines() do
         local fileName = file:gsub(notesPath..'/', ''):gsub('.md$', '')
         table.insert(fzfFilesTbl, fileName)
     end
@@ -37,7 +37,7 @@ elseif taskOperation == 'done' or
         local centralOffset = -6 * 3600
         local centralTime = utcTime + centralOffset
         local date = os.date("%y%m%d", centralTime)
-        local doneFilename = task:gsub("✅ ", date..'-')
+        local doneFilename = task:gsub("tk_", date..'-')
 
         -- generate a file handle with files that contain the pattern (standard out from ripgrep)
         local grep_command = ('rg -F -l --color=never "%s" %s'):format(currentLink, notesPath)
@@ -90,7 +90,7 @@ elseif taskOperation == 'undone' or
         local currentLinks = {}
         currentLinks.noAlias = '[[_tk/'..operationFolder..'/'..task..']]'
         currentLinks.withAlias = '[[_tk/'..operationFolder..'/'..task..'|'..task..']]'
-        local doneFilename = '✅ '..task:sub(8)
+        local doneFilename = 'tk_'..task:sub(8)
 
         for _, link in pairs(currentLinks) do
             local grep_command = ('rg -F -l --color=never "%s" %s'):format(link, notesPath)
