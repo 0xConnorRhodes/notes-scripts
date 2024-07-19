@@ -3,7 +3,7 @@ local notesPath = ''
 if os.getenv('HOSTNAME') == 'devct' then
     notesPath = os.getenv("HOME")..'/notes'
 elseif os.getenv("TERMUX_APP_PID") then
-    notesPath = os.getenv("HOME")..'/storage/dcim/zk_notes'
+    notesPath = os.getenv("HOME")..'/storage/dcim/notes'
 end
 
 -- FUNCTIONS
@@ -28,7 +28,7 @@ if #task_name == 0 then
     os.exit(0)
 end
 
-local filename = '✅ '..task_name..'.md'
+local filename = 'tk_'..task_name..'.md'
 local filepath = notesPath..'/'..filename
 
 local formattedContent = [[]]
