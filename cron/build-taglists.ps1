@@ -2,6 +2,10 @@
 
 $notesDir = "$HOME/notes"
 
+$tagList = @(
+    'vaccounts'
+)
+
 function buildFileList {
     param ([string]$Query)
 
@@ -15,9 +19,19 @@ function buildFileList {
         $accountNames += $file
     }
 
+    $accountNames = $accountNames | Sort-Object
+
+    $listFile = Join-Path -Path $notesDir -ChildPath ".$Query.list"
+
+    if (Test-Path $listFile) {
+        Remove-Item -Force $listFile
+    }
+
     foreach ($name in $accountNames) {
-        Write-Host $name
+        Add-Content -Path $listFile -Value $name
     }
 }
 
-buildFileList -Query 'vaccounts'
+foreach ($tag in $tagList) {
+    buildFileList -Query $tag
+}
