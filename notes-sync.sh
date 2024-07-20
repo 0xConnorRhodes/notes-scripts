@@ -1,8 +1,6 @@
 #!/bin/sh
 # notes sync with git
 
-set -e
-
 cd ~/notes
 
 git add .
