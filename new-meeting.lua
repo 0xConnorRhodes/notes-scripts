@@ -83,5 +83,6 @@ end
 -- #endregion
 
 if platform == 'Android' then
-    os.execute('termux-open '..notesPath..'/'..noteNameExt)
+    local command = ('termux-open "%s"'):format(notesPath..'/'..noteNameExt)
+    os.execute(command)
 end
