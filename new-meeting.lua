@@ -52,14 +52,30 @@ end
 -- #region Add Link from Parent Note
 local accountFile = account..'.md'
 local headerCheckCmd = ("rg '^# Meetings$' '%s'"):format(notesPath..'/'..accountFile)
-local headerCheckResult = io.popen(headerCheckCmd):read("*a")
+local headerCheckResult = io.popen(headerCheckCmd):read('*a')
 
 if #headerCheckResult > 0 then
-    print('header present')
+    local accountFileReadHandle = io.open(notesPath..'/'..accountFile, 'r')
+    local accountFileContent = accountFileReadHandle:read('*a')
+    accountFileReadHandle:close()
+
+    local meetingLink = '- [['..noteName..']]'
+
+    local lines = {}
+    for line in accountFileContent:gmatch("[^\r\n]+") do
+        table.insert(lines, line)
+        if line:match('# Meetings') then
+            table.insert(lines, meetingLink)
+        end
+    end
+
+    local newContent = table.concat(lines, '\n')
+
+    local accountFileWriteHandle = io.open(notesPath..'/'..accountFile, 'w')
+    accountFileWriteHandle:write(newContent)
+    accountFileWriteHandle:close()
+    print('Link added to parent file')
 else
     print('WARNING: Unable to add link to account file, Meetings header not present')
 end
-
--- TODO: If '^# Meetings' is present then add a link to the note at the top of that heading
-
 -- #endregion
