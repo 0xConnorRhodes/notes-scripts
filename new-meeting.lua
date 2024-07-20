@@ -46,4 +46,11 @@ if file then
 else
     print("Error opening file for writing.")
 end
---#endregion
+eeeeeeeeeeeee
+
+-- #region Add Link from Parent Note
+-- TODO: check that the parent note has a heading named '^# Meetings'. If not, exit and warn
+
+-- TODO: If '^# Meetings' is present then add a link to the note at the top of that heading
+
+-- #endregion
