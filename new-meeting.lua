@@ -1,9 +1,11 @@
 --#region CONFIG
 local notesPath = ''
+local platform = ''
 if os.getenv('HOSTNAME') == 'devct' then
     notesPath = os.getenv("HOME")..'/notes'
 elseif os.getenv("TERMUX_APP_PID") then
     notesPath = os.getenv("HOME")..'/storage/dcim/notes'
+    platform = 'Android'
 end
 
 local template = [[{{account_link}}
@@ -79,3 +81,7 @@ else
     print('WARNING: Unable to add link to account file, Meetings header not present')
 end
 -- #endregion
+
+if platform == 'Android' then
+    os.execute('termux-open '..notesPath..'/'..noteNameExt)
+end
