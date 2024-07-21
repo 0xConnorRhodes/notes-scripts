@@ -1,9 +1,9 @@
-#!/home/connor/code/notes-scripts/.pyvenv/bin/python3
+#!.pyvenv/bin/python3
 from datetime import datetime, timedelta
 from jinja2 import Environment, FileSystemLoader
 import os
 
-notes_dir = '/zssd/notes'
+notes_dir = f"{os.environ.get('HOME')}/notes"
 
 def render_note_content(date_str):
     return template.render(
