@@ -1,6 +1,14 @@
-require('modules.lua.get-platform')
+local notesPath = ''
+local platform = ''
+if os.getenv('HOSTNAME') == 'devct' then
+    notesPath = os.getenv("HOME")..'/notes'
+    platform = 'devct'
+elseif os.getenv("TERMUX_APP_PID") then
+    notesPath = os.getenv("HOME")..'/storage/dcim/notes'
+    platform = 'Android'
+end
 
-local savePath = NotesPath..'/s'
+local savePath = notesPath..'/s'
 
 io.write('Name: ')
 local saveName = io.read('*l')
@@ -17,9 +25,9 @@ else
     testFile:close()
 end
 
-if Platform == 'Android' then
+if platform == 'Android' then
     os.execute(string.format('termux-open "%s"', saveFilePath))
-elseif Platform == 'devct' then
+elseif platform == 'devct' then
     os.execute(string.format('nvim -c "startinsert" "%s"', saveFilePath))
 else
     print('Created: '..saveFilePath)
