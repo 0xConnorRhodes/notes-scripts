@@ -11,6 +11,6 @@ for file in $argv
     set newname (echo $newname | sed 's/  / /g') # consolidate repeat spaces
     set newname (echo $newname | sed 's/ /-/g') # replace spaces with -
     set newname "$newname$extension"
-    rsync "$file" "s:/zstore/static_files/nats/$newname"
+    rsync --remove-sent-files "$file" "s:/zstore/static_files/nats/$newname"
     echo "$natsbucket/$newname?$NATSKEY)" 
 end
