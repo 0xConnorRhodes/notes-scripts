@@ -1,6 +1,6 @@
 local natsBucket = 'https://sfs.connorrhodes.com/nats'
 
-local tokenFile = io.open('templates/.sfs-nats-token', 'r')
+local tokenFile = io.open(os.getenv('HOME')..'/code/notes-scripts/templates/.sfs-nats-token', 'r')
 
 local natsToken = ''
 if tokenFile then
@@ -8,6 +8,7 @@ if tokenFile then
     tokenFile:close()
 else
     print('no token file')
+    os.exit(1)
 end
 
 for _, file in ipairs(arg) do
@@ -24,12 +25,16 @@ for _, file in ipairs(arg) do
     newName = newName:gsub(' ', '-')
     local newFile = newName..'.'..extension
     local uploadPath = 's:/zstore/static_files/nats/'..newFile
-    local testCommand = string.format('rsync --dry-run "%s" > /dev/null', uploadPath)
+    local testCommand = string.format('rsync -q --dry-run "%s" > /dev/null 2>&1', uploadPath)
     local uploadCommand = string.format('rsync --remove-sent-files "%s" "%s"', file, uploadPath)
     local filePresent = os.execute(testCommand)
     if filePresent then
         print('file already uploaded')
+        local embedLink = '![]('..natsBucket..'/'..newFile..'?'..natsToken..')'
+        print(embedLink)
         os.exit()
     end
     os.execute(uploadCommand)
+    local embedLink = '![]('..natsBucket..'/'..newFile..'?'..natsToken..')'
+    print(embedLink)
 end
