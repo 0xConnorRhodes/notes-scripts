@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+#region config
 import os
 import glob
 import subprocess
@@ -18,6 +19,7 @@ attachment_exts = [
 ]
 
 replace_chars = [' ', ' ', '.']
+#endregion
 
 attachment_files = []
 for ext in attachment_exts:
