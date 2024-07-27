@@ -19,11 +19,12 @@ attachment_exts = [
     'jpg'
 ]
 
+attachment_dirs = [notes_dir, os.path.join(notes_dir, 'zattachments')]
+
 replace_chars = [' ', ' ', '.']
 #endregion
 
 #region helper functions
-
 def generate_new_filename(filename):
     new_filename = filename.lower()
     for char in replace_chars:
@@ -31,16 +32,22 @@ def generate_new_filename(filename):
     new_filename += f".{extension}"
     return new_filename
 
+def find_attachment_files(folder):
+    attachment_files = []
+    for ext in attachment_exts:
+        files = glob.glob(os.path.join(folder, f"*.{ext}"))
+        attachment_files.extend(files)
+    return attachment_files
 #endregion
 
+# for dir in attachment_dirs:
+#     attachment_files = find_attachment_files(dir)
+#     print(attachment_files)
 
-attachment_files = []
-for ext in attachment_exts:
-    files = glob.glob(os.path.join(notes_dir, f"*.{ext}"))
-    attachment_files.extend(files)
+attachment_files = find_attachment_files(attachment_dirs[0])
 
 if len(attachment_files) == 0:
-    print('No attachments to upload')
+    print(f'No attachments to upload in {notes_dir}')
 
 for file in attachment_files:
     local_file = os.path.basename(file)
