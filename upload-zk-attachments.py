@@ -46,8 +46,7 @@ def find_attachment_files(folder):
 def replace_attachment_links(files_list, existing_link, new_link):
     """
     takes a list of files, the format of existing links, and the new link format (to the file on the server)
-    
-    in the existing files, replaces existing link with new link
+    replaces existing link with new link in listed files
     """
     for note_file in files_list:
         with open(note_file, 'r') as file:
