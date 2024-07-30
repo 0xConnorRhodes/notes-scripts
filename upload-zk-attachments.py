@@ -39,6 +39,14 @@ def find_attachment_files(folder):
         files = glob.glob(os.path.join(folder, f"*.{ext}"))
         attachment_files.extend(files)
     return attachment_files
+
+def replace_attachment_links(files_list, existing_link, new_link):
+    """
+    takes a list of files, the format of existing links, and the new link format (to the file on the server)
+    
+    in the existing files, replaces existing link with new link
+    """
+    pass
 #endregion
 
 attachments_present = False
@@ -87,16 +95,16 @@ for dir in attachment_dirs:
 
                 embed_link = f"![]({nats_bucket}/{new_filename}?{access_token})"
 
-                for note_file in parent_files:
-                    with open(note_file, 'r') as file:
-                        filedata = file.read()
+                # for note_file in parent_files:
+                #     with open(note_file, 'r') as file:
+                #         filedata = file.read()
 
-                    filedata = filedata.replace(local_file_link, embed_link)
+                #     filedata = filedata.replace(local_file_link, embed_link)
 
-                    with open(note_file, 'w') as file:
-                        file.write(filedata)
+                #     with open(note_file, 'w') as file:
+                #         file.write(filedata)
 
-                    print(f"Modified: {note_file}")
+                #     print(f"Modified: {note_file}")
 
         rsync_test_cmd = f'rsync -q --dry-run "{upload_path}" > /dev/null 2>&1'
         rsync_test = subprocess.run(rsync_test_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
