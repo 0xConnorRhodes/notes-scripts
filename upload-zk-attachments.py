@@ -14,10 +14,13 @@ server_path = 's:/zstore/static_files/nats'
 with open(os.path.expanduser('~/code/notes-scripts/templates/.sfs-nats-token'), 'r') as file:
     access_token = file.read().strip()
 
-attachment_exts = [
-    'png',
-    'jpg'
-]
+# embed = use an embed format link to uploaded object, link = use a standard format link to uploaded object
+attachment_filetypes = {
+    'png': 'embed',
+    'jpg': 'embed',
+    'pdf': 'link'
+}
+attachment_exts = list(attachment_filetypes)
 
 zattachments_dir = os.path.join(notes_dir, 'zattachments')
 attachment_dirs = [notes_dir, zattachments_dir]
@@ -46,7 +49,16 @@ def replace_attachment_links(files_list, existing_link, new_link):
     
     in the existing files, replaces existing link with new link
     """
-    pass
+    for note_file in files_list:
+        with open(note_file, 'r') as file:
+            filedata = file.read()
+
+        filedata = filedata.replace(existing_link, new_link)
+
+        with open(note_file, 'w') as file:
+            file.write(filedata)
+
+        print(f"Modified: {note_file}")
 #endregion
 
 attachments_present = False
@@ -77,7 +89,11 @@ for dir in attachment_dirs:
 
         new_filename = generate_new_filename(local_filename)
         upload_path = f"{server_path}/{new_filename}"
-        embed_link = f"![]({nats_bucket}/{new_filename}?{access_token})"
+
+        if attachment_filetypes[extension] == 'embed':
+            embed_link = f"![]({nats_bucket}/{new_filename}?{access_token})"
+        elif attachment_filetypes[extension] == 'link':
+            embed_link = f"[{new_filename}]({nats_bucket}/{new_filename}?{access_token})"
 
         basename_numbered_as_duplicate = bool(re.search(r' \d$', local_filename))
         if basename_numbered_as_duplicate:
@@ -94,17 +110,6 @@ for dir in attachment_dirs:
                 new_filename = generate_new_filename(original_file)
 
                 embed_link = f"![]({nats_bucket}/{new_filename}?{access_token})"
-
-                # for note_file in parent_files:
-                #     with open(note_file, 'r') as file:
-                #         filedata = file.read()
-
-                #     filedata = filedata.replace(local_file_link, embed_link)
-
-                #     with open(note_file, 'w') as file:
-                #         file.write(filedata)
-
-                #     print(f"Modified: {note_file}")
 
         rsync_test_cmd = f'rsync -q --dry-run "{upload_path}" > /dev/null 2>&1'
         rsync_test = subprocess.run(rsync_test_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -123,16 +128,7 @@ for dir in attachment_dirs:
         else:
             print(f"Uploaded {new_filename}")
 
-        for note_file in parent_files:
-            with open(note_file, 'r') as file:
-                filedata = file.read()
-
-            filedata = filedata.replace(local_file_link, embed_link)
-
-            with open(note_file, 'w') as file:
-                file.write(filedata)
-
-            print(f"Modified: {note_file}")
+        replace_attachment_links(parent_files, local_file_link, embed_link)
 
 if not attachments_present:
     print(f'No attachments to upload')
