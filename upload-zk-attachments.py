@@ -59,12 +59,17 @@ def rsync_file(local_file, remote_path, remote_filename, link_to_remote_file, wh
         print(f"\nLink:\n{link_to_remote_file}")
         sys.exit(1)
 
+    rsync_upload_cmd = f'rsync --remove-sent-files "{local_file}" "{upload_path}"'
+
     if whatif:
-        print(f'skipping: {local_file}')
+        print(f'Test mode:\n{rsync_upload_cmd}\n')
         pass
     else:
-        rsync_upload_cmd = f'rsync --remove-sent-files "{local_file}" "{upload_path}"'
-        rsync_upload_result = subprocess.run(rsync_upload_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        rsync_upload_result = subprocess.run(rsync_upload_cmd, 
+                                             shell=True, 
+                                             stdout=subprocess.PIPE, 
+                                             stderr=subprocess.PIPE
+                                )
         if rsync_upload_result.returncode == 1:
             print('Error uploading file, exiting')
             print(rsync_upload_result.returncode)
@@ -107,7 +112,6 @@ def replace_attachment_links(files_list, existing_link, new_link):
 #endregion
 
 attachments_present = False
-
 attachment_files = find_attachment_files(notes_dir, attachment_exts)
 
 if len(attachment_files) > 0:
