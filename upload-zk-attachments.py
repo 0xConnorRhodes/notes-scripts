@@ -155,4 +155,7 @@ if not attachments_present:
     print(f'No attachments to upload')
 
 # tasks
-# TODO: 
+# TODO: handle link to the same local file in multiple notes
+# TODO: handle links to different local files in the same note
+# TODO: handle duplicate local attachments in same file
+# TODO: handle duplicate local attachments in different file
