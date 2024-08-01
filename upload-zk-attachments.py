@@ -29,19 +29,61 @@ replace_chars = [' ', ' ', '.']
 #endregion
 
 #region helper functions
-def generate_new_filename(filename):
-    new_filename = filename.lower()
-    for char in replace_chars:
+def generate_filename(file_path, chars_list):
+    file_basename = os.path.basename(file_path)
+
+    file_name, extension = file_basename.rsplit('.', 1)
+
+    new_filename = file_name.lower()
+    for char in chars_list:
         new_filename = new_filename.replace(char, '-')
     new_filename += f".{extension}"
-    return new_filename
 
-def find_attachment_files(folder):
+    return file_basename, new_filename, extension
+
+def find_attachment_files(folder, ext_list):
     attachment_files = []
-    for ext in attachment_exts:
-        files = glob.glob(os.path.join(folder, f"*.{ext}"))
-        attachment_files.extend(files)
+    for root, dirs, files in os.walk(folder):
+        for file in files:
+            if any(file.endswith(ext) for ext in ext_list):
+                attachment_files.append(os.path.join(root, file))
     return attachment_files
+
+def rsync_file(local_file, server_path, remote_filename, link_to_remote_file):
+    upload_path = f"{server_path}/{remote_filename}"
+    rsync_test_cmd = f'rsync -q --dry-run "{upload_path}" > /dev/null 2>&1'
+    rsync_test = subprocess.run(rsync_test_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if rsync_test.returncode == 0:
+        print(f'file {remote_filename} already exists on server')
+        print(f"Check that '{local_file}' is safe to delete")
+        print(f"\nLink:\n{link_to_remote_file}")
+        sys.exit(1)
+
+    rsync_upload_cmd = f'rsync --remove-sent-files "{local_file}" "{upload_path}"'
+    rsync_upload_result = subprocess.run(rsync_upload_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if rsync_upload_result.returncode == 1:
+        print('Error uploading file, exiting')
+        print(rsync_upload_result.returncode)
+        sys.exit(1)
+    else:
+        print(f"Uploaded {remote_filename}")
+
+def get_files_with_link(file_name, folder):
+    rg_command = f"rg -l -F '{file_name}' {folder}"
+    result = subprocess.run(rg_command, shell=True, capture_output=True, text=True)
+    files_with_link = result.stdout.splitlines()
+    return files_with_link
+
+def get_local_link_format(file, file_basename):
+    with open(file, 'r') as f:
+        filedata = f.read()
+        pattern = r'\!\[\[.*?' + file_basename + r'\]\]'
+        matches = re.findall(pattern, filedata)
+        list(set(matches))
+        if len(matches) > 1:
+            print(f'Error: multiple competing links for {file_basename} present in {parent_file}')
+            sys.exit(1)
+        return str(matches)
 
 def replace_attachment_links(files_list, existing_link, new_link):
     """
@@ -62,72 +104,33 @@ def replace_attachment_links(files_list, existing_link, new_link):
 
 attachments_present = False
 
-for dir in attachment_dirs:
-    attachment_files = find_attachment_files(dir)
-    if len(attachment_files) > 0:
-        attachments_present = True
+attachment_files = find_attachment_files(notes_dir, attachment_exts)
 
-    for file in attachment_files:
-        local_file = os.path.basename(file)
-        local_filename, extension = local_file.rsplit('.', 1)
-        if 'zattachments' in file:
-            local_file_link = f"![[zattachments/{local_file}]]"
-        else:
-            local_file_link = f"![[{local_file}]]"
-        rg_command = f"rg -l -F '{local_file_link}' {notes_dir}"
-        result = subprocess.run(rg_command, shell=True, capture_output=True, text=True)
-        parent_files = result.stdout.splitlines()
+if len(attachment_files) > 0:
+    attachments_present = True
 
-        if not parent_files:
-            print(f"attachment: {file} is unused")
-            choice = input('Remove file? (y/n): ').lower()
-            if choice == 'y':
-                os.remove(file)
-            continue
-        parent_files = list(set(parent_files)) # remove duplicates
+i = 0
+for file in attachment_files:
+    file_basename, new_filename, extension = generate_filename(file, replace_chars)
+    files_with_link = get_files_with_link(file_basename, notes_dir)
+    # TODO: embed_link = generate_embed_link(file)
 
-        new_filename = generate_new_filename(local_filename)
-        upload_path = f"{server_path}/{new_filename}"
+    if not files_with_link:
+        print(f"attachment: {file} is unused")
+        choice = input('Remove file? (y/n): ').lower()
+        if choice == 'y':
+            os.remove(file)
+        continue
+    
+    # TODO: rsync_file(file)
 
-        if attachment_filetypes[extension] == 'embed':
-            embed_link = f"![]({nats_bucket}/{new_filename}?{access_token})"
-        elif attachment_filetypes[extension] == 'link':
-            embed_link = f"[{new_filename}]({nats_bucket}/{new_filename}?{access_token})"
+    for parent_file in files_with_link:
+        # TODO: local_link = get_local_link_format(file)
+        # TODO: replace_local_link_with_remote()
+        pass
 
-        basename_numbered_as_duplicate = bool(re.search(r' \d$', local_filename))
-        if basename_numbered_as_duplicate:
-            last_space_index = local_filename.rfind(' ')
-            original_file = local_filename[:last_space_index]
-            original_filename = f"{original_file}.{extension}"
-            attachment_filenames = [os.path.basename(path) for path in attachment_files]
-
-            if original_filename in attachment_filenames:
-                print(f"{local_file} is a duplicate attachment. Removing.")
-
-                os.remove(file)
-
-                new_filename = generate_new_filename(original_file)
-
-                embed_link = f"![]({nats_bucket}/{new_filename}?{access_token})"
-
-        rsync_test_cmd = f'rsync -q --dry-run "{upload_path}" > /dev/null 2>&1'
-        rsync_test = subprocess.run(rsync_test_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if rsync_test.returncode == 0:
-            print(f'file {new_filename} already exists on server')
-            print(f"Check that '{local_file}' is safe to delete")
-            print(f"\nLink:\n{embed_link}")
-            sys.exit(1)
-
-        rsync_upload_cmd = f'rsync --remove-sent-files "{file}" "{upload_path}"'
-        rsync_upload_result = subprocess.run(rsync_upload_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if rsync_upload_result.returncode == 1:
-            print('Error uploading file, exiting')
-            print(rsync_upload_result.returncode)
-            sys.exit(1)
-        else:
-            print(f"Uploaded {new_filename}")
-
-        replace_attachment_links(parent_files, local_file_link, embed_link)
+    i += 1
+    if i > 0: break
 
 if not attachments_present:
     print(f'No attachments to upload')
