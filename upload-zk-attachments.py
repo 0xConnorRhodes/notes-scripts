@@ -49,8 +49,8 @@ def find_attachment_files(folder, ext_list):
                 attachment_files.append(os.path.join(root, file))
     return attachment_files
 
-def rsync_file(local_file, server_path, remote_filename, link_to_remote_file):
-    upload_path = f"{server_path}/{remote_filename}"
+def rsync_file(local_file, remote_path, remote_filename, link_to_remote_file, whatif):
+    upload_path = f"{remote_path}/{remote_filename}"
     rsync_test_cmd = f'rsync -q --dry-run "{upload_path}" > /dev/null 2>&1'
     rsync_test = subprocess.run(rsync_test_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if rsync_test.returncode == 0:
@@ -59,14 +59,18 @@ def rsync_file(local_file, server_path, remote_filename, link_to_remote_file):
         print(f"\nLink:\n{link_to_remote_file}")
         sys.exit(1)
 
-    rsync_upload_cmd = f'rsync --remove-sent-files "{local_file}" "{upload_path}"'
-    rsync_upload_result = subprocess.run(rsync_upload_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if rsync_upload_result.returncode == 1:
-        print('Error uploading file, exiting')
-        print(rsync_upload_result.returncode)
-        sys.exit(1)
+    if whatif:
+        print(f'skipping: {local_file}')
+        pass
     else:
-        print(f"Uploaded {remote_filename}")
+        rsync_upload_cmd = f'rsync --remove-sent-files "{local_file}" "{upload_path}"'
+        rsync_upload_result = subprocess.run(rsync_upload_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if rsync_upload_result.returncode == 1:
+            print('Error uploading file, exiting')
+            print(rsync_upload_result.returncode)
+            sys.exit(1)
+        else:
+            print(f"Uploaded {remote_filename}")
 
 def get_files_with_link(file_name, folder):
     rg_command = f"rg -l -F '{file_name}' {folder}"
@@ -113,7 +117,10 @@ i = 0
 for file in attachment_files:
     file_basename, new_filename, extension = generate_filename(file, replace_chars)
     files_with_link = get_files_with_link(file_basename, notes_dir)
-    # TODO: embed_link = generate_embed_link(file)
+    if attachment_filetypes[extension] == 'embed':
+        embed_link = f"![]({nats_bucket}/{new_filename}?{access_token})"
+    elif attachment_filetypes[extension] == 'link':
+        embed_link = f"[{new_filename}]({nats_bucket}/{new_filename}?{access_token})"
 
     if not files_with_link:
         print(f"attachment: {file} is unused")
@@ -122,11 +129,17 @@ for file in attachment_files:
             os.remove(file)
         continue
     
-    # TODO: rsync_file(file)
+    rsync_file(
+        local_file=file_basename,
+        remote_path=server_path,
+        remote_filename=new_filename,
+        link_to_remote_file=embed_link,
+        whatif = True
+    )
 
     for parent_file in files_with_link:
         # TODO: local_link = get_local_link_format(file)
-        # TODO: replace_local_link_with_remote()
+        # TODO: replace_attachment_links()
         pass
 
     i += 1
