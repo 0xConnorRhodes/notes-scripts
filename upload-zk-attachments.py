@@ -88,7 +88,7 @@ def get_local_link_format(file, file_basename):
         filedata = f.read()
         pattern = r'\!\[\[.*?' + file_basename + r'\]\]'
         matches = re.findall(pattern, filedata)
-        list(set(matches))
+        matches = list(set(matches))
         if len(matches) > 1:
             print(f'Error: multiple competing links for {file_basename} present in {parent_file}')
             sys.exit(1)
@@ -119,8 +119,8 @@ if len(attachment_files) > 0:
 
 i = 0
 for file in attachment_files:
-    file_basename, new_filename, extension = generate_filename(file, replace_chars)
-    files_with_link = get_files_with_link(file_basename, notes_dir)
+    attachment_basename, new_filename, extension = generate_filename(file, replace_chars)
+    files_with_link = get_files_with_link(attachment_basename, notes_dir)
     if attachment_filetypes[extension] == 'embed':
         embed_link = f"![]({nats_bucket}/{new_filename}?{access_token})"
     elif attachment_filetypes[extension] == 'link':
@@ -134,7 +134,7 @@ for file in attachment_files:
         continue
     
     rsync_file(
-        local_file=file_basename,
+        local_file=attachment_basename,
         remote_path=server_path,
         remote_filename=new_filename,
         link_to_remote_file=embed_link,
@@ -142,12 +142,13 @@ for file in attachment_files:
     )
 
     for parent_file in files_with_link:
-        # TODO: local_link = get_local_link_format(file)
+        local_link = get_local_link_format(parent_file, attachment_basename)
+        # TODO: currently the above function is erroring if there are multiple identical links in the same file. This should be remedied
+
         # TODO: replace_attachment_links()
-        pass
 
     i += 1
-    if i > 0: break
+    # if i > 0: break
 
 if not attachments_present:
     print(f'No attachments to upload')
