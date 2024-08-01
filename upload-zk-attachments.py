@@ -70,8 +70,6 @@ def rsync_file(local_file, remote_path, remote_filename, link_to_remote_file, wh
                                              stdout=subprocess.PIPE, 
                                              stderr=subprocess.PIPE
                                 )
-        print(rsync_upload_cmd)
-        print(rsync_upload_result.stdout)
         if rsync_upload_result.returncode == 1:
             print('Error uploading file, exiting')
             print(rsync_upload_result.returncode)
@@ -94,25 +92,25 @@ def get_local_link_format(file, file_basename):
         if len(matches) > 1:
             print(f'Error: multiple competing links for {file_basename} present in {parent_file}')
             sys.exit(1)
-        return str(matches)
+        matches = matches[0]
+        return matches
 
 def replace_attachment_link(note_file, existing_link, new_link, whatif):
     """
     takes a list of files, the format of existing links, and the new link format (to the file on the server)
     replaces existing link with new link in listed files
     """
+    with open(note_file, 'r') as file:
+        filedata = file.read()
+
+    filedata = filedata.replace(existing_link, new_link)
+
     if whatif:
         print(f'Test Mode:\nWould replace {existing_link} with {new_link} in {note_file}')
-        pass
+        print(f'{filedata=}')
     else:
-        with open(note_file, 'r') as file:
-            filedata = file.read()
-
-        filedata = filedata.replace(existing_link, new_link)
-
         with open(note_file, 'w') as file:
             file.write(filedata)
-
         print(f"Modified: {note_file}")
 #endregion
 
