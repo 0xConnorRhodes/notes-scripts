@@ -29,17 +29,18 @@ replace_chars = [' ', ' ', '.']
 #endregion
 
 #region helper functions
-def generate_filename(file_path, chars_list):
+def generate_filename_data(file_path, chars_list):
     file_basename = os.path.basename(file_path)
+    parent_folder = os.path.dirname(file_path)
 
-    file_name, extension = file_basename.rsplit('.', 1)
+    file_name_no_ext, extension = file_basename.rsplit('.', 1)
 
-    new_filename = file_name.lower()
+    new_filename = file_name_no_ext.lower()
     for char in chars_list:
         new_filename = new_filename.replace(char, '-')
     new_filename += f".{extension}"
 
-    return file_basename, new_filename, extension
+    return file_basename, new_filename, extension, file_name_no_ext, parent_folder
 
 def find_attachment_files(folder, ext_list):
     attachment_files = []
@@ -95,6 +96,22 @@ def get_local_link_format(file, file_basename):
         matches = matches[0]
         return matches
 
+def check_file_dup(folder, file_name, extension):
+    basename_numbered_as_duplicate = bool(re.search(r' \d$', file_name))
+    print(f'{file_name=}')
+    print(f'{basename_numbered_as_duplicate=}')
+    if basename_numbered_as_duplicate:
+        last_space_index = file_name.rfind(' ')
+        original_file = file_name[:last_space_index]
+        original_filename = f"{original_file}.{extension}"
+        original_file_path = os.path.join(folder, original_filename)
+        if os.path.exists(original_file_path):
+            print(f'{file_name} is a duplicate')
+            return True
+    else:
+        return False
+
+
 def replace_attachment_link(note_file, existing_link, new_link, whatif):
     """
     takes a list of files, the format of existing links, and the new link format (to the file on the server)
@@ -122,7 +139,14 @@ if len(attachment_files) > 0:
 
 i = 0
 for file in attachment_files:
-    attachment_basename, new_filename, extension = generate_filename(file, replace_chars)
+    attachment_basename, new_filename, extension, file_name_no_ext, parent_folder = generate_filename_data(file, replace_chars)
+
+    if check_file_dup(parent_folder, file_name_no_ext, extension):
+        print('file dup')
+        pass
+    else:
+        print('file not dup')
+
     files_with_link = get_files_with_link(attachment_basename, notes_dir)
     if attachment_filetypes[extension] == 'embed':
         embed_link = f"![]({nats_bucket}/{new_filename}?{access_token})"
@@ -135,27 +159,28 @@ for file in attachment_files:
         if choice == 'y':
             os.remove(file)
         continue
-    
+
     rsync_file(
         local_file=file,
         remote_path=server_path,
         remote_filename=new_filename,
         link_to_remote_file=embed_link,
-        whatif=False
+        whatif=True
     )
 
     for parent_file in files_with_link:
         local_link = get_local_link_format(parent_file, attachment_basename)
-        replace_attachment_link(parent_file, local_link, embed_link, whatif=False)
+        replace_attachment_link(parent_file, local_link, embed_link, whatif=True)
 
     i += 1
-    if i > 0: break
+    # if i > 0: break
 
 if not attachments_present:
     print(f'No attachments to upload')
 
 # tasks
-# TODO: handle link to the same local file in multiple notes
-# TODO: handle links to different local files in the same note
+# DONE: handle link to the same local file in multiple notes
+# DONE: handle links to different local files in the same note
 # TODO: handle duplicate local attachments in same file
 # TODO: handle duplicate local attachments in different file
+# TODO: handle non-embed link to PDF
