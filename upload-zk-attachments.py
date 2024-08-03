@@ -96,16 +96,14 @@ def get_local_link_format(file, file_basename):
         matches = matches[0]
         return matches
 
-def check_file_dup(folder, file_name, extension):
+def check_file_dup(folder, file_name, extension, file_list):
     basename_numbered_as_duplicate = bool(re.search(r' \d$', file_name))
-    print(f'{file_name=}')
-    print(f'{basename_numbered_as_duplicate=}')
     if basename_numbered_as_duplicate:
         last_space_index = file_name.rfind(' ')
         original_file = file_name[:last_space_index]
         original_filename = f"{original_file}.{extension}"
         original_file_path = os.path.join(folder, original_filename)
-        if os.path.exists(original_file_path):
+        if original_file_path in file_list:
             print(f'{file_name} is a duplicate')
             return True
     else:
@@ -141,11 +139,10 @@ i = 0
 for file in attachment_files:
     attachment_basename, new_filename, extension, file_name_no_ext, parent_folder = generate_filename_data(file, replace_chars)
 
-    if check_file_dup(parent_folder, file_name_no_ext, extension):
+    if check_file_dup(parent_folder, file_name_no_ext, extension, attachment_files):
         print('file dup')
+        # TODO: handle dup case
         pass
-    else:
-        print('file not dup')
 
     files_with_link = get_files_with_link(attachment_basename, notes_dir)
     if attachment_filetypes[extension] == 'embed':
