@@ -2,11 +2,11 @@
 
 #region config
 import os
-import glob
 import subprocess
 import sys
 import re
 
+WhatIf = False
 notes_dir = os.path.expanduser('~/notes')
 nats_bucket = 'https://sfs.connorrhodes.com/nats'
 server_path = 's:/zstore/static_files/nats'
@@ -104,10 +104,12 @@ def check_file_dup(folder, file_name, extension, file_list):
         original_filename = f"{original_file}.{extension}"
         original_file_path = os.path.join(folder, original_filename)
         if original_file_path in file_list:
-            print(f'{file_name} is a duplicate')
-            return True
+            print(f'Duplicate File: {file_name}')
+            return True, original_filename
+        else:
+            return False, False
     else:
-        return False
+        return False, False
 
 
 def replace_attachment_link(note_file, existing_link, new_link, whatif):
@@ -138,17 +140,20 @@ if len(attachment_files) > 0:
 i = 0
 for file in attachment_files:
     attachment_basename, new_filename, extension, file_name_no_ext, parent_folder = generate_filename_data(file, replace_chars)
+    
+    file_dup, original_attachment_filename = check_file_dup(parent_folder, file_name_no_ext, extension, attachment_files)
 
-    if check_file_dup(parent_folder, file_name_no_ext, extension, attachment_files):
-        print('file dup')
-        # TODO: handle dup case
-        pass
+    if file_dup:
+        os.remove(file)
+        new_file = os.path.join(parent_folder, original_attachment_filename)
+        _, new_filename, _, _, _= generate_filename_data(new_file, replace_chars)
 
     files_with_link = get_files_with_link(attachment_basename, notes_dir)
     if attachment_filetypes[extension] == 'embed':
         embed_link = f"![]({nats_bucket}/{new_filename}?{access_token})"
     elif attachment_filetypes[extension] == 'link':
         embed_link = f"[{new_filename}]({nats_bucket}/{new_filename}?{access_token})"
+
 
     if not files_with_link:
         print(f"attachment: {file} is unused")
@@ -157,17 +162,18 @@ for file in attachment_files:
             os.remove(file)
         continue
 
-    rsync_file(
-        local_file=file,
-        remote_path=server_path,
-        remote_filename=new_filename,
-        link_to_remote_file=embed_link,
-        whatif=True
-    )
+    if not file_dup:
+        rsync_file(
+            local_file=file,
+            remote_path=server_path,
+            remote_filename=new_filename,
+            link_to_remote_file=embed_link,
+            whatif=WhatIf
+        )
 
     for parent_file in files_with_link:
         local_link = get_local_link_format(parent_file, attachment_basename)
-        replace_attachment_link(parent_file, local_link, embed_link, whatif=True)
+        replace_attachment_link(parent_file, local_link, embed_link, whatif=WhatIf)
 
     i += 1
     # if i > 0: break
@@ -178,6 +184,6 @@ if not attachments_present:
 # tasks
 # DONE: handle link to the same local file in multiple notes
 # DONE: handle links to different local files in the same note
-# TODO: handle duplicate local attachments in same file
-# TODO: handle duplicate local attachments in different file
+# DONE: handle duplicate local attachments in same file
+# DONE: handle duplicate local attachments in different file
 # TODO: handle non-embed link to PDF
