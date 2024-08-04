@@ -26,17 +26,22 @@ zattachments_dir = os.path.join(notes_dir, 'zattachments')
 attachment_dirs = [notes_dir, zattachments_dir]
 
 replace_chars = [' ', ' ', '.']
+remove_chars = [ '(', ')']
 #endregion
 
 #region helper functions
-def generate_filename_data(file_path, chars_list):
+def generate_filename_data(file_path, replace_chars_list, remove_chars_list):
     file_basename = os.path.basename(file_path)
     parent_folder = os.path.dirname(file_path)
 
     file_name_no_ext, extension = file_basename.rsplit('.', 1)
 
     new_filename = file_name_no_ext.lower()
-    for char in chars_list:
+
+    for char in remove_chars_list:
+        new_filename = new_filename.replace(char, '')
+
+    for char in replace_chars_list:
         new_filename = new_filename.replace(char, '-')
     new_filename += f".{extension}"
 
@@ -84,10 +89,12 @@ def get_files_with_link(file_name, folder):
     files_with_link = result.stdout.splitlines()
     return files_with_link
 
-def get_local_link_format(file, file_basename):
+def get_local_link_format(file, file_basename, escape_chars):
+    for char in escape_chars:
+        file_basename = file_basename.replace(char, f'\\{char}')
+    pattern = r'\!\[\[.*?' + file_basename + r'\]\]'
     with open(file, 'r') as f:
         filedata = f.read()
-        pattern = r'\!\[\[.*?' + file_basename + r'\]\]'
         matches = re.findall(pattern, filedata)
         matches = list(set(matches))
         if len(matches) > 1:
@@ -110,7 +117,6 @@ def check_file_dup(folder, file_name, extension, file_list):
             return False, False
     else:
         return False, False
-
 
 def replace_attachment_link(note_file, existing_link, new_link, whatif):
     """
@@ -137,23 +143,21 @@ attachment_files = find_attachment_files(notes_dir, attachment_exts)
 if len(attachment_files) > 0:
     attachments_present = True
 
-i = 0
 for file in attachment_files:
-    attachment_basename, new_filename, extension, file_name_no_ext, parent_folder = generate_filename_data(file, replace_chars)
+    attachment_basename, new_filename, extension, file_name_no_ext, parent_folder = generate_filename_data(file, replace_chars, remove_chars)
     
     file_dup, original_attachment_filename = check_file_dup(parent_folder, file_name_no_ext, extension, attachment_files)
-
     if file_dup:
-        os.remove(file)
         new_file = os.path.join(parent_folder, original_attachment_filename)
-        _, new_filename, _, _, _= generate_filename_data(new_file, replace_chars)
+        _, new_filename, _, _, _= generate_filename_data(new_file, replace_chars, remove_chars)
+        os.remove(file)
 
     files_with_link = get_files_with_link(attachment_basename, notes_dir)
+
     if attachment_filetypes[extension] == 'embed':
         embed_link = f"![]({nats_bucket}/{new_filename}?{access_token})"
     elif attachment_filetypes[extension] == 'link':
         embed_link = f"[{new_filename}]({nats_bucket}/{new_filename}?{access_token})"
-
 
     if not files_with_link:
         print(f"attachment: {file} is unused")
@@ -172,18 +176,8 @@ for file in attachment_files:
         )
 
     for parent_file in files_with_link:
-        local_link = get_local_link_format(parent_file, attachment_basename)
+        local_link = get_local_link_format(parent_file, attachment_basename, remove_chars)
         replace_attachment_link(parent_file, local_link, embed_link, whatif=WhatIf)
-
-    i += 1
-    # if i > 0: break
 
 if not attachments_present:
     print(f'No attachments to upload')
-
-# tasks
-# DONE: handle link to the same local file in multiple notes
-# DONE: handle links to different local files in the same note
-# DONE: handle duplicate local attachments in same file
-# DONE: handle duplicate local attachments in different file
-# TODO: handle non-embed link to PDF
