@@ -5,6 +5,13 @@ import os
 import subprocess
 import sys
 import re
+import socket
+
+hostname = socket.gethostname()
+
+if hostname != 'devct':
+    print(f'Hostname indicates different platform. Exiting')
+    exit(0)
 
 WhatIf = False
 notes_dir = os.path.expanduser('~/notes')
