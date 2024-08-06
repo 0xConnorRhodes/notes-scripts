@@ -12,7 +12,7 @@ termux_test = os.getenv('TERMUX_APP_PID')
 
 if hostname == 'devct':
     platform = 'linux'
-elif termux_test > 0:
+elif int(termux_test) > 0:
     platform = 'android'
 
 print(f'{platform=}')
