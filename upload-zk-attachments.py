@@ -8,10 +8,14 @@ import re
 import socket
 
 hostname = socket.gethostname()
+termux_test = os.getenv('TERMUX_APP_PID')
 
-# if hostname != 'devct':
-#     print(f'Hostname indicates different platform. Exiting')
-#     exit(0)
+if hostname != 'devct':
+    platform = 'linux'
+elif termux_test:
+    platform = 'android'
+
+print(f'{platform=}')
 
 WhatIf = True
 notes_dir = os.path.expanduser('~/notes')
@@ -96,10 +100,14 @@ def get_files_with_link(file_name, folder):
     files_with_link = result.stdout.splitlines()
     return files_with_link
 
-def get_local_link_format(file, file_basename, escape_chars):
+def get_local_link_format(file, file_basename, escape_chars, hostname):
     for char in escape_chars:
         file_basename = file_basename.replace(char, f'\\{char}')
-    pattern = r'\!\[\[.*?' + file_basename + r'\]\]'
+    if hostname == 'devct':
+        pattern = r'\!\[\[.*?' + file_basename + r'\]\]'
+    else:
+        print('hostname not accounted for in script')
+        exit(1)
     with open(file, 'r') as f:
         filedata = f.read()
         matches = re.findall(pattern, filedata)
