@@ -10,9 +10,9 @@ import socket
 hostname = socket.gethostname()
 termux_test = os.getenv('TERMUX_APP_PID')
 
-if hostname != 'devct':
+if hostname == 'devct':
     platform = 'linux'
-elif termux_test:
+elif termux_test > 0:
     platform = 'android'
 
 print(f'{platform=}')
