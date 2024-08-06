@@ -167,7 +167,7 @@ for file in attachment_files:
     attachment_basename, new_filename, extension, file_name_no_ext, parent_folder = generate_filename_data(file, replace_chars, remove_chars)
     
     file_dup, original_attachment_filename = check_file_dup(parent_folder, file_name_no_ext, extension, attachment_files)
-    if file_dup:
+    if file_dup and WhatIf == False:
         new_file = os.path.join(parent_folder, original_attachment_filename)
         _, new_filename, _, _, _= generate_filename_data(new_file, replace_chars, remove_chars)
         os.remove(file)
