@@ -9,11 +9,11 @@ import socket
 
 hostname = socket.gethostname()
 
-if hostname != 'devct':
-    print(f'Hostname indicates different platform. Exiting')
-    exit(0)
+# if hostname != 'devct':
+#     print(f'Hostname indicates different platform. Exiting')
+#     exit(0)
 
-WhatIf = False
+WhatIf = True
 notes_dir = os.path.expanduser('~/notes')
 nats_bucket = 'https://sfs.connorrhodes.com/nats'
 server_path = 's:/zstore/static_files/nats'
