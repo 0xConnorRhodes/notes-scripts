@@ -15,9 +15,12 @@ if hostname == 'devct':
 elif int(termux_test) > 0:
     platform = 'android'
 
-print(f'{platform=}')
+if platform == 'linux':
+    WhatIf = False
+else:
+    WhatIf = True
 
-WhatIf = True
+# WhatIf = False
 notes_dir = os.path.expanduser('~/notes')
 nats_bucket = 'https://sfs.connorrhodes.com/nats'
 server_path = 's:/zstore/static_files/nats'
@@ -100,11 +103,13 @@ def get_files_with_link(file_name, folder):
     files_with_link = result.stdout.splitlines()
     return files_with_link
 
-def get_local_link_format(file, file_basename, escape_chars, hostname):
+def get_local_link_format(file, file_basename, escape_chars, running_platform):
     for char in escape_chars:
         file_basename = file_basename.replace(char, f'\\{char}')
-    if hostname == 'devct':
+    if running_platform == 'linux':
         pattern = r'\!\[\[.*?' + file_basename + r'\]\]'
+    elif running_platform == 'android':
+        print('running on android. WIP')
     else:
         print('hostname not accounted for in script')
         exit(1)
@@ -191,7 +196,7 @@ for file in attachment_files:
         )
 
     for parent_file in files_with_link:
-        local_link = get_local_link_format(parent_file, attachment_basename, remove_chars)
+        local_link = get_local_link_format(parent_file, attachment_basename, remove_chars, platform)
         replace_attachment_link(parent_file, local_link, embed_link, whatif=WhatIf)
 
 if not attachments_present:
