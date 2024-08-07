@@ -15,12 +15,7 @@ if hostname == 'devct':
 elif int(termux_test) > 0:
     platform = 'android'
 
-if platform == 'linux':
-    WhatIf = False
-else:
-    WhatIf = True
-
-# WhatIf = False
+WhatIf = False
 notes_dir = os.path.expanduser('~/notes')
 nats_bucket = 'https://sfs.connorrhodes.com/nats'
 server_path = 's:/zstore/static_files/nats'
@@ -110,7 +105,6 @@ def get_local_link_format(file, file_basename, escape_chars, running_platform):
         pattern = r'\!\[\[.*?' + file_basename + r'\]\]'
     elif running_platform == 'android':
         pattern = r'\!\[.*?\]\(' + 'zattachments/' + file_basename + r'\)'
-        print(f'{pattern=}')
     else:
         print('hostname not accounted for in script')
         exit(1)
