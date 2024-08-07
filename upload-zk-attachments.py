@@ -109,7 +109,8 @@ def get_local_link_format(file, file_basename, escape_chars, running_platform):
     if running_platform == 'linux':
         pattern = r'\!\[\[.*?' + file_basename + r'\]\]'
     elif running_platform == 'android':
-        print('running on android. WIP')
+        pattern = r'\!\[.*?\]\(' + os.path.join(zattachments_dir, file_basename) + r'\)'
+        print(f'{pattern=}')
     else:
         print('hostname not accounted for in script')
         exit(1)
