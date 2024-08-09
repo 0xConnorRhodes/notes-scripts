@@ -28,6 +28,7 @@ for file in files_with_due_date_lst:
 for task in relevant_tasks:
     print_task = os.path.basename(task)
     print_task = os.path.splitext(print_task)[0]
+    print_task = print_task.replace('tk_', '')
     print(print_task)
 
 # TODO: add print tasks in order of start date
