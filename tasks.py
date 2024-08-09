@@ -12,7 +12,7 @@ options = {
     "done task": f"lua {scripts_dir}/modify-task.lua done",
     "drop task": f"lua {scripts_dir}/modify-task.lua drop",
     "hold task": f"lua {scripts_dir}/modify-task.lua hold",
-    "review tasks": f"lua {scripts_dir}/review-tasks.lua",
+    # "review tasks": f"lua {scripts_dir}/review-tasks.lua",
     "undone tasks": f"lua {scripts_dir}/modify-tasks.lua undone",
     "undrop tasks": f"lua {scripts_dir}/modify-tasks.lua undrop",
     "unhold tasks": f"lua {scripts_dir}/modify-tasks.lua unhold"
@@ -21,4 +21,3 @@ options = {
 choice = fzf.prompt(options.keys())[0]
 
 subprocess.run(options[choice], shell=True)
-# print(choice)
