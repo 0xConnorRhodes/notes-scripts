@@ -7,7 +7,7 @@ elseif os.getenv("TERMUX_APP_PID") then
 end
 -- #endregion
 
--- FUNCTIONS
+-- #region FUNCTIONS
 local function get_input(prompt)
     io.write(prompt..': ')
     return io.read():gsub('%s$', '')
@@ -17,6 +17,7 @@ function file_exists(name)
     local f=io.open(name,"r")
     if f~=nil then io.close(f) return true else return false end
 end
+-- #endregion
 
 -- LOGIC
 print('Adding New Task:')
