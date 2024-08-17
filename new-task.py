@@ -21,7 +21,7 @@ def split_task_sections(task_string):
     """
     split the input string into component parts
     """
-    task_info = {
+    task_info_dict = {
         "task_name": None,
         "start_date": False,
         "due_date": False,
@@ -39,7 +39,6 @@ def split_task_sections(task_string):
 
     present_indices = {key: value for key, value in indices.items() if value != -1}
     sorted_indices = sorted(present_indices.items(), key=lambda item: item[1])
-    sorted_indices_dict = dict(sorted_indices)
 
     si_length = len(sorted_indices)
     for i in range(si_length):
@@ -49,10 +48,15 @@ def split_task_sections(task_string):
             end_index = len(task_string)
         else:
             end_index = sorted_indices[i+1][1]
-        print(f'{i=}')
-        print(f'{attribute_name=}')
-        print(f'{start_index=}')
-        print(f'{end_index=}')
+
+        task_info_dict[attribute_name] = task_string[start_index:end_index]
+    
+    if task_info_dict['start_date']:
+        task_info_dict['start_date'] = task_info_dict['start_date'].replace(' s ', '')
+    if task_info_dict['due_date']:
+        task_info_dict['due_date'] = task_info_dict['due_date'].replace(' d ', '')
+    
+    return task_info_dict
 #endregion
 
 task_input = input('task: ')
@@ -61,7 +65,9 @@ if not task_input:
     print('no task')
     exit(0)
 
-task_name = split_task_sections(task_input) # TODO: add, new, vars as you update split_task_sections()
+task_info = split_task_sections(task_input) # TODO: add, new, vars as you update split_task_sections()
+
+print(task_info)
 
 exit(0)
 
