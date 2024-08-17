@@ -2,6 +2,7 @@
 import os
 import socket
 import subprocess
+from jinja2 import Environment, FileSystemLoader
 from pyfzf.pyfzf import FzfPrompt
 fzf = FzfPrompt()
 
@@ -59,6 +60,24 @@ def split_task_sections(task_string):
         task_info_dict['tag_list'] = task_info_dict['tag_list'].replace(' t ', '').split()
     
     return task_info_dict
+
+def clean_render(content):
+    new_content = content
+    lines = content.splitlines()
+    if lines[0] == '':
+        lines = lines[1:]
+    dash_count = 0
+    new_lines = []
+    for line in lines:
+        if dash_count > 0 and dash_count < 2:
+            if line.strip() == '':
+                continue
+        if line.strip() == '---':
+            dash_count += 1
+
+        new_lines.append(line)
+    new_content = '\n'.join(new_lines)
+    return new_content
 #endregion
 
 task_input = input('task: ')
@@ -69,17 +88,27 @@ if not task_input:
 
 task_info = split_task_sections(task_input) # TODO: add, new, vars as you update split_task_sections()
 
-print(task_info)
+base_dir = os.path.dirname(os.path.abspath(__file__))
+template_dir = os.path.join(base_dir, 'templates')
+env = Environment(loader=FileSystemLoader(template_dir))
+template = env.get_template('task.md.j2')
 
-exit(0)
+rendered_content = template.render(task_info)
 
-filename = f"tk_{task_name}.md"
+rendered_content = clean_render(rendered_content)
+
+filename = f"tk_{task_info['task_name']}.md"
 task_file_path = os.path.join(notes_dir, filename)
 
-file = open(task_file_path, 'w')
-file.close()
+print(rendered_content)
+
+with open(task_file_path, 'w') as file:
+    file.write(rendered_content)
 
 if platform == 'linux':
-    subprocess.run(f'nvim -c "startinsert" "{task_file_path}"', shell=True)
+    subprocess.run(f'nvim +normal!Go +startinsert "{task_file_path}"', shell=True)
 elif platform == 'android':
     subprocess.run(f'termux-open "{task_file_path}"', shell=True)
+
+# TODO: render the template
+# TODO: store dict of tag expansions in templates dir, import it, and update j2 template to add tags, do it wiht # for easier grepping
