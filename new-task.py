@@ -55,6 +55,8 @@ def split_task_sections(task_string):
         task_info_dict['start_date'] = task_info_dict['start_date'].replace(' s ', '')
     if task_info_dict['due_date']:
         task_info_dict['due_date'] = task_info_dict['due_date'].replace(' d ', '')
+    if task_info_dict['tag_list']:
+        task_info_dict['tag_list'] = task_info_dict['tag_list'].replace(' t ', '').split()
     
     return task_info_dict
 #endregion
