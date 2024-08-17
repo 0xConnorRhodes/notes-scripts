@@ -7,7 +7,7 @@ fzf = FzfPrompt()
 scripts_dir = os.path.expanduser('~/code/notes-scripts')
 
 options = {
-    "new task": f"lua {scripts_dir}/new-task.lua",
+    "new task": f"python3 {scripts_dir}/new-task.py",
     "list tasks": f"python3 {scripts_dir}/list-tasks.py",
     "done task": f"lua {scripts_dir}/modify-task.lua done",
     "drop task": f"lua {scripts_dir}/modify-task.lua drop",

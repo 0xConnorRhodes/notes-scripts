@@ -1,6 +1,7 @@
 #region config
 import os
 import socket
+import subprocess
 from pyfzf.pyfzf import FzfPrompt
 fzf = FzfPrompt()
 
@@ -34,7 +35,12 @@ if not task_input:
 task_name = split_task_sections(task_input) # TODO: add, new, vars as you update split_task_sections()
 
 filename = f"tk_{task_name}.md"
-file = open(os.path.join(notes_dir, filename), 'w')
+task_file_path = os.path.join(notes_dir, filename)
+
+file = open(task_file_path, 'w')
 file.close()
 
-# TODO: open task in nvim with `Gi` if devct else termux-open the note after creation
+if platform == 'linux':
+    subprocess.run(f'nvim -c "startinsert" "{task_file_path}"', shell=True)
+elif platform == 'android':
+    subprocess.run(f'termux-open "{task_file_path}"', shell=True)
