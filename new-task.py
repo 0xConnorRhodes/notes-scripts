@@ -109,6 +109,3 @@ if platform == 'linux':
     subprocess.run(f'nvim +normal!Go +startinsert "{task_file_path}"', shell=True)
 elif platform == 'android':
     subprocess.run(f'termux-open "{task_file_path}"', shell=True)
-
-# TODO: render the template
-# TODO: store dict of tag expansions in templates dir, import it, and update j2 template to add tags, do it wiht # for easier grepping
