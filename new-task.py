@@ -53,26 +53,6 @@ def split_task_sections(task_string):
         print(f'{attribute_name=}')
         print(f'{start_index=}')
         print(f'{end_index=}')
-    # if sorted_indices:
-    #     for i in range(len(sorted_indices)):
-    #         print(i)
-        # si_length = len(sorted_indices.keys())
-        # for i, (item, index) in enumerate(sorted_indices_dict.items()):
-        #     # TODO: test if last iter
-        #     print(f'{item=}')
-        #     next_item = sorted_indices[i+1]
-        #     print(f'{next_item=}')
-
-            # if i == 0:
-            #     task_name = task_string[:index]
-            #     prev_item = item
-            # else:
-            #     print(f'{prev_item=}')
-    # else:
-    #     task_name = task_string
-
-    # task_name = task_string
-    # return task_name
 #endregion
 
 task_input = input('task: ')
