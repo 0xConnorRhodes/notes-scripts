@@ -21,9 +21,58 @@ def split_task_sections(task_string):
     """
     split the input string into component parts
     """
+    task_info = {
+        "task_name": None,
+        "start_date": False,
+        "due_date": False,
+        "tag_list": []
+    }
+
     task_string = task_string.strip()
-    task_name = task_string
-    return task_name
+
+    indices = {
+        "task_name": 0,
+        "start_date": task_string.find(' s '),
+        "due_date": task_string.find(' d '),
+        "tag_list": task_string.find(' t ')
+    }
+
+    present_indices = {key: value for key, value in indices.items() if value != -1}
+    sorted_indices = sorted(present_indices.items(), key=lambda item: item[1])
+    sorted_indices_dict = dict(sorted_indices)
+
+    si_length = len(sorted_indices)
+    for i in range(si_length):
+        attribute_name = sorted_indices[i][0]
+        start_index = sorted_indices[i][1]
+        if i == si_length-1:
+            end_index = len(task_string)
+        else:
+            end_index = sorted_indices[i+1][1]
+        print(f'{i=}')
+        print(f'{attribute_name=}')
+        print(f'{start_index=}')
+        print(f'{end_index=}')
+    # if sorted_indices:
+    #     for i in range(len(sorted_indices)):
+    #         print(i)
+        # si_length = len(sorted_indices.keys())
+        # for i, (item, index) in enumerate(sorted_indices_dict.items()):
+        #     # TODO: test if last iter
+        #     print(f'{item=}')
+        #     next_item = sorted_indices[i+1]
+        #     print(f'{next_item=}')
+
+            # if i == 0:
+            #     task_name = task_string[:index]
+            #     prev_item = item
+            # else:
+            #     print(f'{prev_item=}')
+    # else:
+    #     task_name = task_string
+
+    # task_name = task_string
+    # return task_name
 #endregion
 
 task_input = input('task: ')
@@ -33,6 +82,8 @@ if not task_input:
     exit(0)
 
 task_name = split_task_sections(task_input) # TODO: add, new, vars as you update split_task_sections()
+
+exit(0)
 
 filename = f"tk_{task_name}.md"
 task_file_path = os.path.join(notes_dir, filename)
