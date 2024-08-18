@@ -8,11 +8,10 @@ import re
 import socket
 
 hostname = socket.gethostname()
-termux_test = os.getenv('TERMUX_APP_PID')
 
 if hostname == 'devct':
     platform = 'linux'
-elif int(termux_test) > 0:
+elif 'TERMUX_APP_PID' in os.environ:
     platform = 'android'
 
 WhatIf = False
