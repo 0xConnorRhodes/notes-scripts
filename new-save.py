@@ -2,7 +2,6 @@
 import os
 import socket
 import subprocess
-from jinja2 import Environment, FileSystemLoader
 from pyfzf.pyfzf import FzfPrompt
 fzf = FzfPrompt()
 
