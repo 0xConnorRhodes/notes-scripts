@@ -32,7 +32,7 @@ if platform == 'linux':
         pass
     subprocess.run(f'nvim +startinsert "{save_file_path}"', shell=True)
 elif platform == 'android':
-    save_link = subprocess.run(f'termux-clipboard-get', shell=True, capture_output=True, text=True)
+    save_link = subprocess.run(f'termux-clipboard-get', shell=True, capture_output=True, text=True).stdout
 
     with open(save_file_path, 'w') as file:
         file.write(save_link + '\n\n')
