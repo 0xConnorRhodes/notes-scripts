@@ -33,4 +33,5 @@ with open(save_file_path, 'w') as file:
 if platform == 'linux':
     subprocess.run(f'nvim +startinsert "{save_file_path}"', shell=True)
 elif platform == 'android':
+    subprocess.run(f'termux-clipboard-get > "{save_file_path}"', shell=True)
     subprocess.run(f'termux-open "{save_file_path}"', shell=True)
