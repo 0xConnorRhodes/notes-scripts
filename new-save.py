@@ -27,11 +27,14 @@ if not save_name:
 
 save_file_path = os.path.join(save_dir, save_file_name)
 
-with open(save_file_path, 'w') as file:
-    pass
-
 if platform == 'linux':
+    with open(save_file_path, 'w') as file:
+        pass
     subprocess.run(f'nvim +startinsert "{save_file_path}"', shell=True)
 elif platform == 'android':
-    subprocess.run(f'termux-clipboard-get > "{save_file_path}"', shell=True)
+    save_link = subprocess.run(f'termux-clipboard-get', shell=True, capture_output=True, text=True)
+
+    with open(save_file_path, 'w') as file:
+        file.write(save_link + '\n\n')
+
     subprocess.run(f'termux-open "{save_file_path}"', shell=True)
