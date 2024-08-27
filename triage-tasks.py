@@ -20,12 +20,16 @@ def test_output():
 # TODO: as the loop continues, show tk_files - processed files
 files = [f for f in os.listdir(notes_dir) if os.path.isfile(os.path.join(notes_dir, f))]
 tk_files = [f for f in files if f.startswith("tk_")]
+tk_files.insert(0, 'q')
 processed_files = []
 
 while len(tk_files) > 0:
     selected = fzf.prompt(tk_files, '--multi')
 
-    actions = [ 'drop', 'hold', 'done', 'skip' ]
+    if 'q' in selected:
+        break
+
+    actions = [ 'drop', 'hold', 'done', 'skip', 'q' ]
     chosen_action = fzf.prompt(actions)[0]
 
     match chosen_action:
@@ -37,5 +41,7 @@ while len(tk_files) > 0:
             test_output()
         case 'skip':
             test_output()
+
+    processed_files.extend(selected)
 
 print(processed_files)
