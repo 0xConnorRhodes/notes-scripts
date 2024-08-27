@@ -1,10 +1,11 @@
 # region config
 import os
+import shutil
 from pyfzf.pyfzf import FzfPrompt
 fzf = FzfPrompt()
 notes_dir = os.path.expanduser("~/notes")
+tasks_dir = os.path.join(notes_dir, "_tk")
 # endregion
-
 
 import time
 def test_output():
@@ -24,12 +25,14 @@ tk_files.insert(0, 'q')
 processed_files = []
 
 while len(tk_files) > 0:
+    tk_files = [i for i in tk_files if i not in processed_files]
+
     selected = fzf.prompt(tk_files, '--multi')
 
     if 'q' in selected:
         break
 
-    actions = [ 'drop', 'hold', 'done', 'skip', 'q' ]
+    actions = [ 'drop', 'hold', 'done', 'skip']
     chosen_action = fzf.prompt(actions)[0]
 
     match chosen_action:
@@ -43,5 +46,3 @@ while len(tk_files) > 0:
             test_output()
 
     processed_files.extend(selected)
-
-print(processed_files)
