@@ -46,3 +46,5 @@ while len(tk_files) > 0:
             test_output()
 
     processed_files.extend(selected)
+
+# TODO: add code to move task files to done and drop
