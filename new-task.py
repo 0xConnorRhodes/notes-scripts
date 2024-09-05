@@ -88,6 +88,13 @@ if not task_input:
 
 task_info = split_task_sections(task_input) # TODO: add, new, vars as you update split_task_sections()
 
+if task_info['start_date']:
+    start_date = task_info['start_date']
+    # screen out start dates in the form 240529
+    if start_date.isdigit() and len(start_date) < 4:
+        # TODO: add the start_date value to the value of $today and set that as start_date in the proper format
+        pass
+
 base_dir = os.path.dirname(os.path.abspath(__file__))
 template_dir = os.path.join(base_dir, 'templates')
 env = Environment(loader=FileSystemLoader(template_dir))
