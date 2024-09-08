@@ -1,4 +1,5 @@
-#!.pyvenv/bin/python3
+#!/home/connor/code/notes-scripts/.pyenv/bin/python3
+
 from datetime import datetime, timedelta
 from jinja2 import Environment, FileSystemLoader
 import os
@@ -17,7 +18,7 @@ def get_note_filepath(date_str):
 
 # Determine path to script, set and load template
 base_dir = os.path.dirname(os.path.abspath(__file__))
-template_dir = os.path.join(base_dir, 'templates')
+template_dir = "/home/connor/code/notes-scripts/templates"
 env = Environment(loader=FileSystemLoader(template_dir))
 template = env.get_template('daily_note-template.md.j2')
 
