@@ -1,5 +1,6 @@
 import os
 import subprocess
+import runpy
 
 def check_and_clone():
     notes_path = os.path.expanduser('~/notes')
@@ -17,7 +18,9 @@ def check_and_clone():
         except subprocess.CalledProcessError as e:
             print(f"An error occurred while cloning the repository: {e}")
     else:
-        print(f"Folder {notes_path} already exists.")
+        print(f"Folder {notes_path} already exists. Syncing changes...")
+        runpy.run_path(path_name=os.path.expanduser("~/code/notes-scripts/upload-zk-attachments.py"))
+
 
 if __name__ == "__main__":
     check_and_clone()
