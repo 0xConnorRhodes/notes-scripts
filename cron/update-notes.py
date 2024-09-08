@@ -19,7 +19,7 @@ def check_and_clone():
             print(f"An error occurred while cloning the repository: {e}")
     else:
         print(f"Folder {notes_path} already exists. Syncing changes...")
-        runpy.run_path(path_name=os.path.expanduser("~/code/notes-scripts/upload-zk-attachments.py"))
+        runpy.run_path(path_name=os.path.expanduser("~/code/notes-scripts/notes-sync-lx.py"))
 
 
 if __name__ == "__main__":
