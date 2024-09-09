@@ -170,12 +170,19 @@ if start_date_tasks:
 if next_due_tasks:
     add_output('Due Soon:', next_due_tasks)
 
-fzf_prev_cmd = "--preview='bat ~/notes/tk{}.md --color=always --style=plain'"
+fzf_prev_cmd = "--preview='bat ~/notes/tk{}.md --color=always --style=plain -l markdown'"
 
 output.reverse()
+output.append('q')
 choice = fzf.prompt(output, f"--multi {fzf_prev_cmd}")
+
+if 'q' in choice:
+    exit(0)
+
+if len(choice) == 1:
+    file = f"{notes_dir}/tk{choice[0]}.md"
+    subprocess.run(f'nvim "{file}"', shell=True)
 
 # TODO: add print tasks in order of start date
 # TODO: add printing a table of task name, start date
 # TODO: add filter tasks by tag. fzf prompt, default to all, and support selecting one or multiple tasks instead
-# TODO: add fzf with preview through bat style=plain colorize=always and markdown syntax (not sure if this is possible since the item fzf'd is different than the filename)
