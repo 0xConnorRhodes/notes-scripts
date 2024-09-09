@@ -143,7 +143,6 @@ def add_output(task_type, task_type_list):
 today = datetime.today()
 today_fmt = int(today.strftime('%y%m%d'))
 
-
 while True:
     past_due_tasks = get_past_due_tasks()
     due_date_tasks = get_due_tasks()
