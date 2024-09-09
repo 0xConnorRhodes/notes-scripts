@@ -174,14 +174,14 @@ fzf_prev_cmd = "--preview='bat ~/notes/tk{}.md --color=always --style=plain -l m
 
 output.reverse()
 output.append('q')
-choice = fzf.prompt(output, f"--multi {fzf_prev_cmd}")
 
-if 'q' in choice:
-    exit(0)
+while True:
+    choice = fzf.prompt(output, f"--multi {fzf_prev_cmd}")
+    if 'q' in choice: exit()
 
-if len(choice) == 1:
-    file = f"{notes_dir}/tk{choice[0]}.md"
-    subprocess.run(f'nvim "{file}"', shell=True)
+    if len(choice) == 1:
+        file = f"{notes_dir}/tk{choice[0]}.md"
+        subprocess.run(f'nvim "{file}"', shell=True)
 
 # TODO: add print tasks in order of start date
 # TODO: add printing a table of task name, start date
