@@ -2,6 +2,10 @@
 import os
 import subprocess
 from datetime import datetime
+
+from pyfzf.pyfzf import FzfPrompt
+fzf = FzfPrompt()
+
 notes_dir = os.path.expanduser('~/notes')
 #endregion
 
@@ -139,37 +143,37 @@ start_date_tasks = [
     and t not in next_due_tasks
 ]
 
+output = []
+
+# def add_output(task_type, task_type_list):
+#     output.append(task_type)
+#     for task in task_type_list:
+#         print_task = os.path.basename(task)
+#         print_task = os.path.splitext(print_task)[0]
+#         print_task = print_task.replace('tk_', '- ')
+#         output.append(print_task)
+
+def add_output(task_type, task_type_list):
+    output.append(task_type)
+    for task in task_type_list:
+        print_task = os.path.basename(task)
+        print_task = os.path.splitext(print_task)[0]
+        print_task = print_task.replace('tk_', '_')
+        output.append(print_task)
+
 if past_due_tasks:
-    print('Past Due Tasks:')
-    for task in past_due_tasks:
-        print_task = os.path.basename(task)
-        print_task = os.path.splitext(print_task)[0]
-        print_task = print_task.replace('tk_', '- ')
-        print(print_task)
-
+    add_output('Past Due Tasks:', past_due_tasks)
 if due_date_tasks:
-    print('Due Tasks:')
-    for task in due_date_tasks:
-        print_task = os.path.basename(task)
-        print_task = os.path.splitext(print_task)[0]
-        print_task = print_task.replace('tk_', '- ')
-        print(print_task)
-
+    add_output('Due Tasks:', due_date_tasks)
 if start_date_tasks:
-    print('Start Tasks:')
-    for task in start_date_tasks:
-        print_task = os.path.basename(task)
-        print_task = os.path.splitext(print_task)[0]
-        print_task = print_task.replace('tk_', '- ')
-        print(print_task)
-
+    add_output('Start Tasks:', start_date_tasks)
 if next_due_tasks:
-    print('Due Soon:')
-    for task in next_due_tasks:
-        print_task = os.path.basename(task)
-        print_task = os.path.splitext(print_task)[0]
-        print_task = print_task.replace('tk_', '- ')
-        print(print_task)
+    add_output('Due Soon:', next_due_tasks)
+
+fzf_prev_cmd = "--preview='bat ~/notes/tk{}.md --color=always --style=plain'"
+
+output.reverse()
+choice = fzf.prompt(output, f"--multi {fzf_prev_cmd}")
 
 # TODO: add print tasks in order of start date
 # TODO: add printing a table of task name, start date
