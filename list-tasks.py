@@ -6,6 +6,8 @@ from datetime import datetime
 from pyfzf.pyfzf import FzfPrompt
 fzf = FzfPrompt()
 
+fzf_prev_cmd = "--preview='bat ~/notes/tk{}.md --color=always --style=plain -l markdown'"
+
 notes_dir = os.path.expanduser('~/notes')
 #endregion
 
@@ -127,6 +129,15 @@ def get_next_due_tasks():
         files_with_due_date_lst = files_with_due_date_str.stdout.splitlines()
 
     return relevant_tasks
+
+def add_output(task_type, task_type_list):
+    if task_type_list:
+        output.append(task_type)
+        for task in task_type_list:
+            print_task = os.path.basename(task)
+            print_task = os.path.splitext(print_task)[0]
+            print_task = print_task.replace('tk_', '_')
+            output.append(print_task)
 #endregion
 
 today = datetime.today()
@@ -143,35 +154,12 @@ start_date_tasks = [
     and t not in next_due_tasks
 ]
 
+# build fzf output list
 output = []
-
-# def add_output(task_type, task_type_list):
-#     output.append(task_type)
-#     for task in task_type_list:
-#         print_task = os.path.basename(task)
-#         print_task = os.path.splitext(print_task)[0]
-#         print_task = print_task.replace('tk_', '- ')
-#         output.append(print_task)
-
-def add_output(task_type, task_type_list):
-    output.append(task_type)
-    for task in task_type_list:
-        print_task = os.path.basename(task)
-        print_task = os.path.splitext(print_task)[0]
-        print_task = print_task.replace('tk_', '_')
-        output.append(print_task)
-
-if past_due_tasks:
-    add_output('Past Due Tasks:', past_due_tasks)
-if due_date_tasks:
-    add_output('Due Tasks:', due_date_tasks)
-if start_date_tasks:
-    add_output('Start Tasks:', start_date_tasks)
-if next_due_tasks:
-    add_output('Due Soon:', next_due_tasks)
-
-fzf_prev_cmd = "--preview='bat ~/notes/tk{}.md --color=always --style=plain -l markdown'"
-
+add_output('Past Due Tasks:', past_due_tasks)
+add_output('Due Tasks:', due_date_tasks)
+add_output('Start Tasks:', start_date_tasks)
+add_output('Due Soon:', next_due_tasks)
 output.reverse()
 output.append('q')
 
