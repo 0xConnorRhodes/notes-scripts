@@ -143,27 +143,28 @@ def add_output(task_type, task_type_list):
 today = datetime.today()
 today_fmt = int(today.strftime('%y%m%d'))
 
-past_due_tasks = get_past_due_tasks()
-due_date_tasks = get_due_tasks()
-next_due_tasks = get_next_due_tasks()
-
-start_date_tasks = [ 
-    t for t in get_start_date_tasks() 
-    if t not in past_due_tasks 
-    and t not in due_date_tasks 
-    and t not in next_due_tasks
-]
-
-# build fzf output list
-output = []
-add_output('Past Due Tasks:', past_due_tasks)
-add_output('Due Tasks:', due_date_tasks)
-add_output('Start Tasks:', start_date_tasks)
-add_output('Due Soon:', next_due_tasks)
-output.reverse()
-output.append('q')
 
 while True:
+    past_due_tasks = get_past_due_tasks()
+    due_date_tasks = get_due_tasks()
+    next_due_tasks = get_next_due_tasks()
+
+    start_date_tasks = [ 
+        t for t in get_start_date_tasks() 
+        if t not in past_due_tasks 
+        and t not in due_date_tasks 
+        and t not in next_due_tasks
+    ]
+
+    # build fzf output list
+    output = []
+    add_output('Past Due Tasks:', past_due_tasks)
+    add_output('Due Tasks:', due_date_tasks)
+    add_output('Start Tasks:', start_date_tasks)
+    add_output('Due Soon:', next_due_tasks)
+    output.reverse()
+    output.append('q')
+
     choice = fzf.prompt(output, f"--multi {fzf_prev_cmd}")
     if 'q' in choice: exit()
 
@@ -171,7 +172,6 @@ while True:
         file = f"{notes_dir}/tk{choice[0]}.md"
         subprocess.run(f'nvim "{file}"', shell=True)
 
-# TODO: alter script logic to regenerate task list after editing to ensure task list is up to date based on previous edits
 # TODO: add print tasks in order of start date
 # TODO: add printing a table of task name, start date
 # TODO: add filter tasks by tag. fzf prompt, default to all, and support selecting one or multiple tasks instead
