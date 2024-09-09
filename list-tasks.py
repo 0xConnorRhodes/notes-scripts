@@ -183,6 +183,7 @@ while True:
         file = f"{notes_dir}/tk{choice[0]}.md"
         subprocess.run(f'nvim "{file}"', shell=True)
 
+# TODO: alter script logic to regenerate task list after editing to ensure task list is up to date based on previous edits
 # TODO: add print tasks in order of start date
 # TODO: add printing a table of task name, start date
 # TODO: add filter tasks by tag. fzf prompt, default to all, and support selecting one or multiple tasks instead
