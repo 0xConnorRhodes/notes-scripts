@@ -21,8 +21,8 @@ except subprocess.CalledProcessError as e:
     elif e.stderr:
         print("ERROR: git threw error that git rebase --continue did not fix. Investigate")
 
-# Run git pull
-subprocess.run(['git', 'pull'], check=True)
+# Run git pull (ignore errors)
+subprocess.run(['git', 'pull'], check=False)
 
 # Run git push
 subprocess.run(['git', 'push'], check=True)
