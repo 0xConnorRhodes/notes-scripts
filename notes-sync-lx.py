@@ -25,6 +25,10 @@ except subprocess.CalledProcessError as e:
 subprocess.run(['git', 'pull'], check=False)
 
 # Run git push
-subprocess.run(['git', 'push'], check=True)
+try:
+    subprocess.run(['git', 'push'], check=True)
+except:
+    subprocess.run("git rebase --continue", shell=True, check=True)
+    subprocess.run(['git', 'push'], check=True)
 
 runpy.run_path(path_name=os.path.expanduser("~/code/notes-scripts/upload-zk-attachments.py"))
