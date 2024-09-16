@@ -107,8 +107,6 @@ rendered_content = clean_render(rendered_content)
 filename = f"tk_{task_info['task_name']}.md"
 task_file_path = os.path.join(notes_dir, filename)
 
-print(rendered_content)
-
 with open(task_file_path, 'w') as file:
     file.write(rendered_content)
 
