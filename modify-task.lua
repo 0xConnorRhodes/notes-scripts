@@ -1,10 +1,11 @@
 -- #region CONFIG
-local notesPath = ""
-if os.getenv('HOSTNAME') == 'devct' then
-    notesPath = os.getenv("HOME")..'/notes'
-elseif os.getenv("TERMUX_APP_PID") then
-    notesPath = os.getenv("HOME")..'/storage/dcim/notes'
-end
+--local notesPath = ""
+local notesPath = os.getenv("HOME")..'/notes'
+--if os.getenv('HOSTNAME') == 'devct' then
+--    notesPath = os.getenv("HOME")..'/notes'
+--elseif os.getenv("TERMUX_APP_PID") then
+--    notesPath = os.getenv("HOME")..'/storage/dcim/notes'
+--end
 -- #endregion
 
 local taskOperation = arg[1]
