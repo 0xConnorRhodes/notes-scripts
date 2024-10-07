@@ -1,13 +1,11 @@
-def fzf(args = '-m')
+def fzf(collection, args = '-m')
   io = IO.popen('fzf ' + args, 'r+')
   begin
-    stdout, $stdout = $stdout, io
-    yield rescue nil
+    collection.each { |item| io.puts(item) }
+    io.close_write
+    results = io.readlines.map(&:chomp)
+    results.size == 1 ? results.first : results
   ensure
-    $stdout = stdout
+    io.close_write unless io.closed?
   end
-  io.close_write
-  io.readlines.map(&:chomp)
 end
-
-# result = fzf { puts [1, 2, 3, 4 ]}
