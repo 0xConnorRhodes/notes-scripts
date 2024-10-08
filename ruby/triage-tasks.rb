@@ -5,7 +5,6 @@
   
   notes_folder = File.expand_path("~/notes")
   date = Time.now.strftime('%y%m%d')
-  
   tasks = Dir.glob(File.join(notes_folder, 'tk_*.md'))
  
   scheduled_tasks = `rg -l -F -d 1 "start_date: " ~/notes`.split("\n")
@@ -27,7 +26,6 @@
   
   operation_list = ['done', 'drop', 'hold', 'q']
   operation_list.unshift('edit') if chosen_tasks.length == 1
-  
   operation = fzf(operation_list)[0]
   exit if operation == 'q'
 #endregion
