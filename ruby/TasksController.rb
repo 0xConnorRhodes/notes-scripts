@@ -1,32 +1,42 @@
 require 'fileutils'
 require 'date'
 require_relative 'fzf'
+require "pry"
 
-class NoteController
-  def initialize(notes_folder, date, tasks_arr)
-    @notes_folder = notes_folder
-    @date = date
-    @tasks = tasks_arr
+class TasksController
+  def initialize
+    @notes_folder = File.expand_path("~/notes")
+    @date = Time.now.strftime('%y%m%d')
+  end
+
+  def build_tasks_arr(include_future: false)
+    @tasks = Dir.glob(File.join(@notes_folder, 'tk_*.md'))
+
+    if include_future == false
+      scheduled_tasks = `rg -l -F -d 1 "start_date: " "#{@notes_folder}"`.split("\n")
+      future_tasks = []
+      scheduled_tasks.each do |f|
+       start_date = `grep "start_date: " "#{f}"`
+       start_date = start_date.match(/\d{6}/)[0].to_i
+       if start_date > @date.to_i
+         future_tasks.push(f)
+       end
+      end
+      @tasks = @tasks - future_tasks
+    end
+
+    @tasks = @tasks.map {|f| File.basename(f)}.map {|i| i.sub('tk_', '')}.map {|i| i.sub('.md', '')}
+    @tasks.unshift('q')
   end
 end
 
-notes_folder = File.expand_path("~/notes")
-date = Time.now.strftime('%y%m%d')
-tasks = Dir.glob(File.join(notes_folder, 'tk_*.md'))
+tasks = TasksController.new
+tasks.build_tasks_arr()
 
-scheduled_tasks = `rg -l -F -d 1 "start_date: " ~/notes`.split("\n")
-future_tasks = []
-scheduled_tasks.each do |f|
- start_date = `grep "start_date: " "#{f}"`
- start_date = start_date.match(/\d{6}/)[0].to_i
- if start_date > date.to_i
-   future_tasks.push(f)
- end
-end
-tasks = tasks - future_tasks
+exit
+##########################################
 
-tasks = tasks.map {|f| File.basename(f)}.map {|i| i.sub('tk_', '')}.map {|i| i.sub('.md', '')}
-tasks.unshift('q')
+
 
 chosen_tasks = fzf(tasks, "-m --preview='bat ~/notes/tk_{}.md --color=always --style=plain -l markdown'")
 exit if chosen_tasks[0] == 'q'
@@ -55,9 +65,7 @@ def refile_tasks(task_array, task_operation)
     puts "#{task_operation.upcase}: #{task}"
   end
 end 
-ndregion
 
-egion actions
 if operation == 'edit'
   edit_file = File.join(NOTES_FOLDER, "tk_#{chosen_tasks[0]}.md")
   exec("nvim \"#{edit_file}\"")
