@@ -1,7 +1,6 @@
 require 'fileutils'
 require 'date'
 require_relative 'fzf'
-require "pry"
 
 class TasksController
   def initialize
