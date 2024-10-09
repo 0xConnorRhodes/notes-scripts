@@ -4,9 +4,9 @@ require_relative 'fzf'
 
 class NoteController
   def initialize(notes_folder, date, tasks_arr)
-   @notes_folder = notes_folder
-   @date = date
-   @tasks = tasks_arr
+    @notes_folder = notes_folder
+    @date = date
+    @tasks = tasks_arr
   end
 end
 
