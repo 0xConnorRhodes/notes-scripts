@@ -1,6 +1,4 @@
-alias tk="python3 $HOME/code/notes-scripts/tasks.py"
+alias tk="ruby $HOME/code/notes-scripts/tasks.rb"
 alias ntk="lua $HOME/code/notes-scripts/new-task.lua"
 alias mt="lua $HOME/code/notes-scripts/new-meeting.lua"
-alias ns="python3 $HOME/code/notes-scripts/notes-sync-lx.py"
 alias sv="python3 $HOME/code/notes-scripts/new-save.py"
-alias nat="lua $HOME/code/notes-scripts/push-attachment.lua"
