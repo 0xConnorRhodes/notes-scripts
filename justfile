@@ -6,3 +6,9 @@ mkpyenv:
 
 pull-sub:
 	git pull && git submodule update --init --recursive
+
+build-venv:
+	python -m venv .pyenv	
+	source .pyenv/bin/activate
+	pip install --upgrade pip
+	pip install jinja2
