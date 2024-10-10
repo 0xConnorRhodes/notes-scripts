@@ -1,6 +1,6 @@
 require 'fileutils'
 require 'date'
-require_relative 'fzf'
+require_relative 'modules/ruby/fzf'
 
 class TasksController
   def initialize
@@ -32,7 +32,7 @@ class TasksController
     @chosen_tasks = fzf(display_tasks, "-m --preview='bat ~/notes/tk_{}.md --color=always --style=plain -l markdown'")
     exit if @chosen_tasks[0] == 'q'
 
-    operation_list = ['done', 'drop', 'hold', 'q']
+    operation_list = ['done', 'drop', 'hold', 'tag', 'q']
     operation_list.unshift('edit') if @chosen_tasks.length == 1
     @operation = fzf(operation_list)[0]
     exit if @operation == 'q'
