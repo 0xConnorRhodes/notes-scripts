@@ -1,6 +1,7 @@
 require 'fileutils'
 require 'date'
 require_relative 'modules/ruby/fzf'
+require 'pry'
 
 class TasksController
   def initialize
@@ -8,8 +9,18 @@ class TasksController
     @date = Time.now.strftime('%y%m%d')
   end
 
-  def build_tasks_arr(include_future: false)
-    @tasks = Dir.glob(File.join(@notes_folder, 'tk_*.md'))
+  def build_tasks_arr(include_future: false,  show_tags: false, exclude_tags: false)
+
+    @tasks = []
+    if show_tags
+      show_tags.each do |tag|
+        append_tasks = `rg -l -F -d 1 "##{tag}" "#{@notes_folder}" --glob "tk_*.md"`.split("\n")
+        @tasks += append_tasks
+      end
+    else
+      @tasks = Dir.glob(File.join(@notes_folder, 'tk_*.md'))
+    end
+
 
     if include_future == false
       scheduled_tasks = `rg -l -F -d 1 "start_date: " "#{@notes_folder}"`.split("\n")
@@ -42,7 +53,7 @@ class TasksController
     case @operation
     when 'edit'
       edit_file = File.join(@notes_folder, "tk_#{@chosen_tasks[0]}.md")
-      exec("nvim \"#{edit_file}\"")
+      system("nvim \"#{edit_file}\"")
     when 'done', 'drop', 'hold'
       @chosen_tasks.each do |task|
         move_from = File.join(@notes_folder, "tk_#{task}.md")
@@ -60,11 +71,24 @@ class TasksController
       
         puts "#{@operation.upcase}: #{task}"
       end
+    when 'tag'
+      tag = fzf(['verk', 'proj'])[0]
+      @chosen_tasks.each do |task|
+        file_path = File.join(@notes_folder, "tk_#{task}.md")
+        original_content = File.read(file_path)
+        new_content = "##{tag}\n" + original_content
+        File.open(file_path, 'w') do |file|
+          file.write(new_content)
+        end
+      end
     end
   end
 end
 
 tasks = TasksController.new
-tasks.build_tasks_arr()
-tasks.display
-tasks.process_choice
+
+while true
+  tasks.build_tasks_arr(show_tags: ['verk'])
+  tasks.display
+  tasks.process_choice
+end
