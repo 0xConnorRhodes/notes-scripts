@@ -87,8 +87,11 @@ end
 
 tasks = TasksController.new
 
+# pass how tags on cli with `rb triage-tasks.rb "tag1 tag2"`
+show_tags = ARGV[0] ? ARGV[0].split(' ') : false
+
 while true
-  tasks.build_tasks_arr(show_tags: ['verk'])
+  tasks.build_tasks_arr(show_tags: show_tags)
   tasks.display
   tasks.process_choice
 end
