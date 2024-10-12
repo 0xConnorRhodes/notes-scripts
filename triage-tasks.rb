@@ -2,7 +2,7 @@ require 'fileutils'
 require 'date'
 require_relative 'modules/ruby/fzf'
 
-class TasksController
+class TasksViewer
   def initialize
     @notes_folder = File.expand_path("~/notes")
     @date = Time.now.strftime('%y%m%d')
@@ -84,7 +84,7 @@ class TasksController
   end
 end
 
-tasks = TasksController.new
+tasks = TasksViewer.new
 
 # pass how tags on cli with `rb triage-tasks.rb "tag1 tag2"`
 show_tags = ARGV[0] ? ARGV[0].split(' ') : false
