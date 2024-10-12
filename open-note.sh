@@ -1,6 +1,3 @@
-#!/usr/bin/env fish
+#!/bin/sh
 
-cd ~/notes
-set note (fd -e md --exclude _tk --exclude df --exclude b . | fzf)
-
-nvim $note
+lua $HOME/code/notes-scripts/open-note.lua
