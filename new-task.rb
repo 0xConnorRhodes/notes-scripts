@@ -13,15 +13,16 @@ class TaskCreator
 
   def get_task_str
     cli = HighLine.new
-    # task_str = cli.ask "task: "
-    # task_str = 'new task'
-    task_str = 'new task s 241014'
-    # task_str = 'new task d 241014'
-    # task_str = 'new task s 241014 d 241015'
+    task_str = cli.ask "task: "
   end
 
-  def create_task_file file_content
-    puts file_content
+  def create_task_file task_name:, file_content:
+    file_name = "tk_#{task_name}.md"
+    file_path = File.join(@notes_folder, file_name)
+    File.open(file_path, 'w') do |f|
+      f.puts file_content
+    end
+    return file_path
   end
 
   def process_task_str task_str
@@ -59,4 +60,5 @@ new_task = TaskCreator.new
 task_str = new_task.get_task_str
 task_data = new_task.process_task_str(task_str)
 file_content = new_task.render_file_content(task_data)
-new_task.create_task_file(file_content)
+task_file = new_task.create_task_file(task_name: task_data[:task_name], file_content: file_content)
+exec("nvim \"#{task_file}\"")
