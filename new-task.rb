@@ -1,5 +1,6 @@
 require 'highline'
 require 'mustache'
+require 'date'
 require 'pry'
 
 class TaskTemplate < Mustache
@@ -26,10 +27,28 @@ class TaskCreator
   end
 
   def process_task_str task_str
-    start_match = task_str.match(/s \d{6}/)
-    start_date = start_match ? start_match[0].slice(2..-1).to_i : nil
-    due_match = task_str.match(/d \d{6}/)
-    due_date = due_match ? due_match[0].slice(2..-1).to_i : nil
+    start_match = task_str.match(/s \d{6}/) || task_str.match(/s \d{1,2}/)
+    if start_match
+      start_date = start_match[0].slice(2..-1).to_i
+    else
+      start_date = nil
+    end
+
+    if start_date && start_date < 101
+      start_date = (Date.today + start_date).strftime('%y%m%d')
+    end
+
+    due_match = task_str.match(/d \d{6}/) || task_str.match(/d \d{1,2}/)
+    if due_match
+      due_date = due_match[0].slice(2..-1).to_i
+    else
+      due_date = nil
+    end
+
+    if due_date && due_date < 101
+      due_date = (Date.today + due_date).strftime('%y%m%d')
+    end
+
     task_name = task_str.sub(start_match.to_s, '').sub(due_match.to_s, '').strip
 
     task_data = { task_name: task_name, start_date: start_date, due_date: due_date }
