@@ -1,7 +1,6 @@
 require 'highline'
 require 'mustache'
 require 'date'
-require 'pry'
 
 class TaskTemplate < Mustache
   self.template_file = File.join(File.dirname(__FILE__), 'template.mustache')
