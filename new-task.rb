@@ -89,9 +89,9 @@ class TaskCreator
     tags_list = [' ', 
                  'verk', 
                  'home', 
+                 'incubate',
                  'leisure', 
-                 'purchase_incubate', 
-                 'incubate'
+                 'purchase_incubate'
                 ]
 
     tags = fzf(tags_list, '-m').map { |tag| "##{tag}" }
