@@ -86,7 +86,14 @@ class TaskCreator
   end
 
   def prompt_tags
-    tags_list = [' ', 'verk', 'home', 'proj', 'lowkey', 'purchase_incubate', 'incubate']
+    tags_list = [' ', 
+                 'verk', 
+                 'home', 
+                 'leisure', 
+                 'purchase_incubate', 
+                 'incubate'
+                ]
+
     tags = fzf(tags_list, '-m').map { |tag| "##{tag}" }
   end
 
