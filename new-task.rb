@@ -1,6 +1,7 @@
 require 'highline'
 require 'mustache'
 require 'date'
+require_relative "modules/ruby/fzf"
 
 class TaskTemplate < Mustache
   self.template_file = File.join(File.dirname(__FILE__), 'template.mustache')
@@ -53,23 +54,40 @@ class TaskCreator
     task_data = { task_name: task_name, start_date: start_date, due_date: due_date }
   end
 
-  def render_file_content task_data
-    # file_lines = ['# meta', "\n", '# info', "\n\n", '# mtks', '- [ ] ', "\n"]
-    file_lines = ["# meta\n", "\n", "# info\n", "\n\n", "# mtks\n", "- [ ] \n", "\n"]
+  def render_file_content task_data, task_tags
+    file_lines = ["# meta\n", 
+                  "\n", 
+                  "# info\n", 
+                  "\n\n", 
+                  "# mtks\n", 
+                  "- [ ] \n", 
+                  "\n"]
 
-    if task_data[:start_date] == nil and task_data[:due_date] == nil
-      file_lines.insert(1, "- \n")
-    end
+    # uncomment if you want an extra empty bullet point under #meta
+    # if task_data[:start_date] == nil and task_data[:due_date] == nil
+    #   file_lines.insert(2, "- \n")
+    # end
 
-    if task_data[:due_date]
-      file_lines.insert(1, "- due_date: #{task_data[:due_date]}\n")
+    if task_tags.include?("# ")
+      file_lines.insert(1, "- tags: \n",)
+    else
+      file_lines.insert(1, "- tags: #{task_tags.join(', ')}\n")
     end
 
     if task_data[:start_date]
-      file_lines.insert(1, "- start_date: #{task_data[:start_date]}\n")
+      file_lines.insert(2, "- start_date: #{task_data[:start_date]}\n")
+    end
+
+    if task_data[:due_date]
+      file_lines.insert(2, "- due_date: #{task_data[:due_date]}\n")
     end
 
     file_lines.join()
+  end
+
+  def prompt_tags
+    tags_list = [' ', 'verk', 'home', 'proj', 'lowkey', 'purchase_incubate', 'incubate']
+    tags = fzf(tags_list, '-m').map { |tag| "##{tag}" }
   end
 
 end # end Class
@@ -77,6 +95,7 @@ end # end Class
 new_task = TaskCreator.new
 task_str = new_task.get_task_str
 task_data = new_task.process_task_str(task_str)
-file_content = new_task.render_file_content(task_data)
+tags = new_task.prompt_tags
+file_content = new_task.render_file_content(task_data, tags)
 task_file = new_task.create_task_file(task_name: task_data[:task_name], file_content: file_content)
 exec("nvim \"#{task_file}\"")
