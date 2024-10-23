@@ -32,11 +32,12 @@ def write_file(meeting_with, meeting_purpose, template)
   file_name = "mt_#{date} #{meeting_with} #{meeting_purpose}.md"
   filepath = "#{NOTES_FOLDER}/#{file_name}"
 
-  template = template.gsub('{{ meetand }}', meeting_with)
+  rendered_template = template.gsub('{{ meetand }}', meeting_with)
 
   File.open(filepath, 'w') do |f|
-    f.puts template
+    f.puts rendered_template
   end
+
   puts "wrote: #{file_name}"
 end
 
