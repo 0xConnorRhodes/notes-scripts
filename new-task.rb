@@ -1,11 +1,11 @@
 require 'highline'
-require 'mustache'
+# require 'mustache'
 require 'date'
 require_relative "modules/ruby/fzf"
 
-class TaskTemplate < Mustache
-  self.template_file = File.join(File.dirname(__FILE__), 'template.mustache')
-end
+# class TaskTemplate < Mustache
+#   self.template_file = File.join(File.dirname(__FILE__), 'template.mustache')
+# end
 
 class TaskCreator
   def initialize
