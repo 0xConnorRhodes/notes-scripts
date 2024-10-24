@@ -29,7 +29,13 @@ end
 
 def write_file(meeting_with, meeting_purpose, template)
   date = Date.today.strftime("%y%m%d").to_s
-  file_name = "mt_#{date} #{meeting_with} #{meeting_purpose}.md"
+
+  if meeting_purpose.length > 0
+    # add space between meetand and meeting purpose if meeting purpose is supplied
+    meeting_purpose = ' ' + meeting_purpose
+  end
+
+  file_name = "mt_#{date} #{meeting_with}#{meeting_purpose}.md"
   filepath = "#{NOTES_FOLDER}/#{file_name}"
 
   rendered_template = template.gsub('{{ meetand }}', meeting_with)
