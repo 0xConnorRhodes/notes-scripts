@@ -25,11 +25,3 @@ class OOMarkdown
     File.open(file, 'w') { |file| file.puts new_file_lines }
   end
 end
-
-# oom = OOMarkdown.new()
-
-# note = File.expand_path('~/notes/dn_241025.md') 
-# heading = "# Today I *get* to\n"
-# # heading = "## my one thing\n"
-
-# test = oom.append_to_heading(note, heading, %w(newline1 newline2 newline3))
