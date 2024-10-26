@@ -14,6 +14,7 @@ class TaskLister
     end
 
     # slice off file path, task prefix, and extension. Keep _ so no char replacement needed later
+    date_tasks -= date_tasks.grep(/(Connor Rhodes's conflicted copy)/)
     return date_tasks.map {|i| i[@notes_folder.length+3..-4]}
   end
 end
