@@ -6,7 +6,7 @@ class OOMarkdown
     segment_start = file_lines.index(heading)
 
     unless segment_start
-      puts "Error: given heading is not in the file"
+      puts "Error: Heading \"#{heading.chomp}\" not in file"
       exit(1)
     end
 
