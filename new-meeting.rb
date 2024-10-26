@@ -19,8 +19,6 @@ note_template = <<-TEMPLATE
 TEMPLATE
 
 
-cli = HighLine.new
-
 class NewMeeting
   def choose_meetand
     vaccounts_list = File.readlines(File.join(NOTES_FOLDER, '.vaccounts.list')).map(&:chomp)
@@ -38,7 +36,8 @@ class NewMeeting
     file_name = "mt_#{date} #{meeting_with}#{meeting_purpose}.md"
     filepath = "#{NOTES_FOLDER}/#{file_name}"
 
-    rendered_template = template.gsub('{{ meetand }}', meeting_with)
+    meetand_link = @rdex_list.grep(meeting_with).empty? ? meeting_with : "r_"+meeting_with
+    rendered_template = template.gsub('{{ meetand }}', meetand_link)
 
     File.open(filepath, 'w') do |f|
       f.puts rendered_template
@@ -48,6 +47,7 @@ class NewMeeting
   end
 end
 
+cli = HighLine.new
 meet = NewMeeting.new
 
 meetand = meet.choose_meetand()
