@@ -1,5 +1,3 @@
-require 'pry'
-
 class OOMarkdown
   def append_to_heading(file, heading, append_lines)
   # given a heading, parse all text under that heading (including nested subheadings)
