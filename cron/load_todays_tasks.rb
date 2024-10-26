@@ -1,5 +1,5 @@
 require 'date'
-require_relative '../modules/TaskLister'
+require_relative '../modules/ruby/TaskLister'
 require 'pry'
 
 def build_on_deck_section(due_tasks_arr, due_soon_tasks_arr, start_tasks_arr)
@@ -11,11 +11,11 @@ def build_on_deck_section(due_tasks_arr, due_soon_tasks_arr, start_tasks_arr)
   return on_deck_section
 end
 
-NOTES_FOLDER = File.join(File.expand_path('~'), 'notes')
+notes_folder = File.join(File.expand_path('~'), 'notes')
 tasks = TaskLister.new
 
 today = Date.today.strftime('%y%m%d').to_i
-daily_note_path = File.join(NOTES_FOLDER, "dn_#{today}.md")
+daily_note_path = File.join(notes_folder, "dn_#{today}.md")
 
 due_tasks = tasks.get_tasks_by_date("due_date: ", today)
 due_soon_tasks = tasks.get_tasks_by_date("due_date: ", today+3) - due_tasks
@@ -32,3 +32,5 @@ end
 unless dn_content.grep("## on deck\n").empty?
   puts "Error: on deck heading already present"
 end
+
+# next: insert the rendered markdown section per voila

@@ -1,5 +1,5 @@
 require 'date'
-require_relative 'modules/TaskLister'
+require_relative 'modules/ruby/TaskLister'
 
 today = Date.today.strftime('%y%m%d').to_i
 tasks = TaskLister.new
