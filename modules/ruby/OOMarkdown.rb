@@ -13,8 +13,8 @@ class OOMarkdown
     end
 
     heading_level = heading.match(/^(#+).*/)&.[](1)
-    segment_end = nil
 
+    segment_end = nil
     file_lines[segment_start+1..-1].each do |line|
       if line[0..heading_level.length] == heading_level + " "
         segment_end = file_lines.index(line)
