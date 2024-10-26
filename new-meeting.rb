@@ -37,9 +37,9 @@ class NewMeeting
     file_name = "mt_#{date} #{meeting_with}#{meeting_purpose}.md"
     filepath = "#{NOTES_FOLDER}/#{file_name}"
 
-    if !@rdex_list.grep(meeting_with).empty?
+    if @rdex_list.grep(meeting_with).any?
       meetand_link = "r_"+meeting_with
-    elsif !@circles_list.grep(meeting_with).empty?
+    elsif @circles_list.grep(meeting_with).any?
       meetand_link = "c_"+meeting_with
     else
       meetand_link = meeting_with
