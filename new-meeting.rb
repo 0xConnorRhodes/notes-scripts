@@ -23,7 +23,8 @@ class NewMeeting
   def choose_meetand
     vaccounts_list = File.readlines(File.join(NOTES_FOLDER, '.vaccounts.list')).map(&:chomp)
     @rdex_list = File.readlines(File.join(NOTES_FOLDER, '.rdex.list')).map(&:chomp)
-    meetands = (vaccounts_list + @rdex_list).uniq
+    @circles_list = File.readlines(File.join(NOTES_FOLDER, '.circles.list')).map(&:chomp)
+    meetands = (vaccounts_list + @rdex_list + @circles_list).uniq
     chosen_meetand = fzf(meetands)[0]
   end
 
@@ -36,7 +37,14 @@ class NewMeeting
     file_name = "mt_#{date} #{meeting_with}#{meeting_purpose}.md"
     filepath = "#{NOTES_FOLDER}/#{file_name}"
 
-    meetand_link = @rdex_list.grep(meeting_with).empty? ? meeting_with : "r_"+meeting_with
+    if !@rdex_list.grep(meeting_with).empty?
+      meetand_link = "r_"+meeting_with
+    elsif !@circles_list.grep(meeting_with).empty?
+      meetand_link = "c_"+meeting_with
+    else
+      meetand_link = meeting_with
+    end
+
     rendered_template = template.gsub('{{ meetand }}', meetand_link)
 
     File.open(filepath, 'w') do |f|
