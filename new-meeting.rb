@@ -2,11 +2,14 @@ require 'highline'
 require 'date'
 require_relative 'modules/ruby/fzf'
 require_relative 'modules/ruby/OOMarkdown'
+require 'pry'
 
 NOTES_FOLDER = File.join(File.expand_path('~'), 'notes')
 
 note_template = <<-TEMPLATE
-[[{{ meetand }}]]
+# meta
+- [[{{ meetand }}]]
+- type: {{ tag_list }}
 
 # context
 
@@ -28,7 +31,7 @@ class NewMeeting
     chosen_meetand = fzf(meetands)[0]
   end
 
-  def write_file(meeting_with, meeting_purpose, template)
+  def write_file(meeting_with, meeting_purpose, template, tag_list)
     date = Date.today.strftime("%y%m%d").to_s
 
     # add space between meetand and meeting purpose if meeting purpose is supplied
@@ -45,7 +48,9 @@ class NewMeeting
       meetand_link = meeting_with
     end
 
-    rendered_template = template.gsub('{{ meetand }}', meetand_link)
+    rendered_template = template
+      .gsub('{{ meetand }}', meetand_link)
+      .gsub('{{ tag_list }}', tag_list)
 
     File.open(filepath, 'w') do |f|
       f.puts rendered_template
@@ -58,19 +63,25 @@ class NewMeeting
   end
 end
 
+# instantiate objects
 cli = HighLine.new
 meet = NewMeeting.new
 oom = OOMarkdown.new
 
+# prompt for meeting info
 meetand = meet.choose_meetand()
-
 if meetand == 'NEW'
   meetand = cli.ask "meetand: "
 end
 
 purpose = cli.ask "purpose: "
 
-meeting_file, parent_file = meet.write_file(meetand, purpose, note_template)
+possible_tags = ['zoom', 'internal', 'onsite', 'home']
+tags = fzf(possible_tags, '-m')
+tags_rendered = tags.map { |i| "#"+i } .join(", ")
+
+# write file and links
+meeting_file, parent_file = meet.write_file(meetand, purpose, note_template, tags_rendered)
 
 parent_file_path = File.join(NOTES_FOLDER, parent_file + '.md')
 
