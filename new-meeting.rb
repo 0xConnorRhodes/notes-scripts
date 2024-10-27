@@ -1,7 +1,7 @@
 require 'highline'
 require 'date'
 require_relative 'modules/ruby/fzf'
-require 'pry'
+require_relative 'modules/ruby/OOMarkdown'
 
 NOTES_FOLDER = File.join(File.expand_path('~'), 'notes')
 
@@ -51,12 +51,16 @@ class NewMeeting
       f.puts rendered_template
     end
 
+    meeting_link = file_name[..-4]
+
+    return meeting_link, meetand_link
     puts "wrote: #{file_name}"
   end
 end
 
 cli = HighLine.new
 meet = NewMeeting.new
+oom = OOMarkdown.new
 
 meetand = meet.choose_meetand()
 
@@ -66,4 +70,12 @@ end
 
 purpose = cli.ask "purpose: "
 
-meet.write_file(meetand, purpose, note_template)
+meeting_file, parent_file = meet.write_file(meetand, purpose, note_template)
+
+parent_file_path = File.join(NOTES_FOLDER, parent_file + '.md')
+
+if File.exist?(parent_file_path)
+  oom.prepend_to_heading(parent_file_path, "# Meetings\n", ["- [[#{meeting_file}]]"])
+else
+  puts "Parent file \"#{parent_file}\" does not exist. No parent link inserted"
+end
