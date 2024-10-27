@@ -1,6 +1,7 @@
 require 'highline'
 require 'date'
 require_relative "modules/ruby/fzf"
+require 'pry'
 
 class TaskCreator
   def initialize
@@ -49,7 +50,7 @@ class TaskCreator
     task_data = { task_name: task_name, start_date: start_date, due_date: due_date }
   end
 
-  def render_file_content task_data, task_tags
+  def render_file_content task_data, task_meta
     file_lines = ["# meta\n", 
                   "\n", 
                   "# info\n", 
@@ -58,10 +59,14 @@ class TaskCreator
                   "- [ ] \n", 
                   "\n"]
 
-    if task_tags.include?("# ")
+    if task_meta[:tags].include?("# ")
       file_lines.insert(1, "- tags: \n",)
     else
-      file_lines.insert(1, "- tags: #{task_tags.join(', ')}\n")
+      file_lines.insert(1, "- tags: #{task_meta[:tags].join(', ')}\n")
+    end
+
+    if task_meta[:projects].any?
+      file_lines.insert(2, "- project: #{task_meta[:projects].join(', ')}\n")
     end
 
     if task_data[:start_date]
@@ -75,7 +80,7 @@ class TaskCreator
     file_lines.join()
   end
 
-  def prompt_tags
+  def prompt_meta
     tags_list = [' ', 
                  'verk', 
                  'home', 
@@ -84,7 +89,18 @@ class TaskCreator
                  'purchase_incubate'
                 ]
 
-    tags = fzf(tags_list, '-m').map { |tag| "##{tag}" }
+    project_list = Dir.glob(
+      File.join(@notes_folder, 'tk_p_*'))
+      .map{|i| i[@notes_folder.length+4..-4]}
+
+    choices = fzf(tags_list+project_list, '-m')
+    projects = choices.grep(/^p_/)
+    tags = choices - projects
+    tags.map!{|i| "#"+i}
+    projects.map!{|i| "[[tk_#{i}]]"}
+
+    meta = { tags: tags, projects: projects }
+    return meta
   end
 
 end # end Class
@@ -92,7 +108,7 @@ end # end Class
 new_task = TaskCreator.new
 task_str = new_task.get_task_str
 task_data = new_task.process_task_str(task_str)
-tags = new_task.prompt_tags
-file_content = new_task.render_file_content(task_data, tags)
+task_meta = new_task.prompt_meta
+file_content = new_task.render_file_content(task_data, task_meta)
 task_file = new_task.create_task_file(task_name: task_data[:task_name], file_content: file_content)
 exec("nvim \"#{task_file}\"")
