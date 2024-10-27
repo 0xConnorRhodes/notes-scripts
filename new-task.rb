@@ -1,11 +1,6 @@
 require 'highline'
-# require 'mustache'
 require 'date'
 require_relative "modules/ruby/fzf"
-
-# class TaskTemplate < Mustache
-#   self.template_file = File.join(File.dirname(__FILE__), 'template.mustache')
-# end
 
 class TaskCreator
   def initialize
@@ -62,11 +57,6 @@ class TaskCreator
                   "# mtks\n", 
                   "- [ ] \n", 
                   "\n"]
-
-    # uncomment if you want an extra empty bullet point under #meta
-    # if task_data[:start_date] == nil and task_data[:due_date] == nil
-    #   file_lines.insert(2, "- \n")
-    # end
 
     if task_tags.include?("# ")
       file_lines.insert(1, "- tags: \n",)
