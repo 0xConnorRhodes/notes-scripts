@@ -1,7 +1,6 @@
 require 'highline'
 require 'date'
 require_relative "modules/ruby/fzf"
-require 'pry'
 
 class TaskCreator
   def initialize
@@ -87,7 +86,10 @@ class TaskCreator
       File.join(@notes_folder, 'tk_p_*'))
       .map{|i| i[@notes_folder.length+4..-4]}
 
+    project_list.reject! {|i| i.include?("(Connor Rhodes's conflicted copy)") }
+
     choices = fzf(tags_list+project_list, '-m')
+
     projects = choices.grep(/^p_/)
     tags = choices - projects
     tags.map!{|i| "#"+i}
