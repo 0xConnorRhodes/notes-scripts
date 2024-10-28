@@ -81,13 +81,7 @@ class TaskCreator
   end
 
   def prompt_meta
-    tags_list = [' ', 
-                 'verk', 
-                 'home', 
-                 'incubate',
-                 'leisure', 
-                 'purchase_incubate'
-                ]
+    tags_list = [' ']+File.readlines(File.join(@notes_folder, '.task-tags.list'))
 
     project_list = Dir.glob(
       File.join(@notes_folder, 'tk_p_*'))
