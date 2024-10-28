@@ -48,9 +48,14 @@ class NewMeeting
       meetand_link = meeting_with
     end
 
-    rendered_template = template
-      .gsub('{{ meetand }}', meetand_link)
-      .gsub('{{ tag_list }}', tag_list)
+    rendered_template = template.gsub('{{ meetand }}', meetand_link)
+    
+    if tag_list
+      rendered_template.gsub!('{{ tag_list }}', tag_list)
+    else
+      rendered_template.gsub!("- type: {{ tag_list }}\n", '')
+    end
+
 
     File.open(filepath, 'w') do |f|
       f.puts rendered_template
@@ -76,9 +81,9 @@ end
 
 purpose = cli.ask "purpose: "
 
-possible_tags = ['zoom', 'internal', 'onsite', 'home']
+possible_tags = [' ', 'zoom', 'internal', 'onsite', 'home']
 tags = fzf(possible_tags, '-m')
-tags_rendered = tags.map { |i| "#"+i } .join(", ")
+tags_rendered = tags.map { |i| "#"+i } .join(", ") unless tags == [' ']
 
 # write file and links
 meeting_file, parent_file = meet.write_file(meetand, purpose, note_template, tags_rendered)
