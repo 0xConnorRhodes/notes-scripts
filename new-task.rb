@@ -26,7 +26,12 @@ class TaskCreator
     if start_match
       start_date = start_match[0].slice(2..-1).to_i
     else
-      start_date = nil
+      start_match = task_str.match(/s\d{6}/) || task_str.match(/s\d{1,2}/)
+      if start_match
+        start_date = start_match[0].slice(1..-1).to_i
+      else
+        start_date = nil
+      end
     end
 
     if start_date && start_date < 101
@@ -37,7 +42,12 @@ class TaskCreator
     if due_match
       due_date = due_match[0].slice(2..-1).to_i
     else
-      due_date = nil
+      due_match = task_str.match(/d\d{6}/) || task_str.match(/d\d{1,2}/)
+      if due_match
+        due_date = due_match[0].slice(1..-1).to_i
+      else
+        due_date = nil
+      end
     end
 
     if due_date && due_date < 101
