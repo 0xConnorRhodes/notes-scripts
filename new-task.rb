@@ -117,4 +117,8 @@ task_data = new_task.process_task_str(task_str)
 task_meta = new_task.prompt_meta
 file_content = new_task.render_file_content(task_data, task_meta)
 task_file = new_task.create_task_file(task_name: task_data[:task_name], file_content: file_content)
-exec("nvim \"#{task_file}\"")
+if ENV['TERMUX_VERSION']
+  exec("termux-open \"#{task_file}\"")
+else
+  exec("nvim \"#{task_file}\"")
+end
