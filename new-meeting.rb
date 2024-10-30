@@ -97,5 +97,5 @@ else
 end
 
 if ENV['TERMUX_VERSION']
-  exec("termux-open \"#{File.join(NOTES_FOLDER, meeting_file}\"")
+  exec("termux-open \"#{File.join(NOTES_FOLDER, meeting_file+'.md')}\"")
 end
