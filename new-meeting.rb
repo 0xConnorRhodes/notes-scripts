@@ -95,3 +95,7 @@ if File.exist?(parent_file_path)
 else
   puts "Parent file \"#{parent_file}\" does not exist. No parent link inserted"
 end
+
+if ENV['TERMUX_VERSION']
+  exec("termux-open \"#{File.join(NOTES_FOLDER, meeting_file}\"")
+end
