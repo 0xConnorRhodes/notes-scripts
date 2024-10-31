@@ -5,7 +5,7 @@ scripts_dir = File.expand_path("~/code/notes-scripts")
 options = {
   new_task: "ruby #{scripts_dir}/new-task.rb",
   list_tasks: "ruby #{scripts_dir}/list-tasks.rb",
-  triage_tasks: "ruby #{scripts_dir}/triage-tasks.rb"
+  triage_tasks: "ruby #{scripts_dir}/triage-tasks.rb",
   done_task: "ruby #{scripts_dir}/modify-task.rb done",
   drop_task: "ruby #{scripts_dir}/modify-task.rb drop",
   hold_task: "ruby #{scripts_dir}/modify-task.rb hold",
