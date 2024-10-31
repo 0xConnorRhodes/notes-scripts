@@ -1,5 +1,3 @@
-require 'find'
-
 directory = File.expand_path('~/notes')
 
 def replace_pattern(file_path)
