@@ -9,9 +9,9 @@ options = {
   done_task: "ruby #{scripts_dir}/modify-task.rb done",
   drop_task: "ruby #{scripts_dir}/modify-task.rb drop",
   hold_task: "ruby #{scripts_dir}/modify-task.rb hold",
-  undone_tasks: "lua5.4 #{scripts_dir}/modify-task.lua undone",
-  undrop_tasks: "lua5.4 #{scripts_dir}/modify-task.lua undrop",
-  unhold_tasks: "lua5.4 #{scripts_dir}/modify-task.lua unhold"
+  undone_task: "ruby #{scripts_dir}/modify-task.rb undone",
+  undrop_task: "ruby #{scripts_dir}/modify-task.rb undrop",
+  unhold_task: "ruby #{scripts_dir}/modify-task.rb unhold"
 }
 
 choice = fzf(options.keys)[0].to_sym
