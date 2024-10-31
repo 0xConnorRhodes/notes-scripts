@@ -113,6 +113,7 @@ end # end Class
 
 new_task = TaskCreator.new
 task_str = new_task.get_task_str
+exit(1) if task_str.empty?
 task_data = new_task.process_task_str(task_str)
 task_meta = new_task.prompt_meta
 file_content = new_task.render_file_content(task_data, task_meta)

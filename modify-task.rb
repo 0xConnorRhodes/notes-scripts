@@ -1,6 +1,7 @@
 require 'fileutils'
 require_relative 'modules/ruby/fzf'
 require 'date'
+require 'pry'
 
 
 class TaskMover
@@ -31,6 +32,11 @@ class TaskMover
     chosen.each do |t|
       t_filed = t.sub("tk_", file_date + '-')
       FileUtils.move("#{@notes_folder}/#{t}", "#{file_folder}/#{t_filed}")
+
+      current_link = "[[#{t[..-4]}]]"
+      new_link = "[[t/#{function}/#{t_filed[..-4]}]]"
+      update_links current_link, new_link
+
       puts "#{function.upcase}: #{t}"
     end
   end
@@ -53,6 +59,11 @@ class TaskMover
     chosen.each do |t|
       t_unfiled = t.sub(/^\d{6}-/, 'tk_')
       FileUtils.move("#{file_folder}/#{t}", "#{@notes_folder}/#{t_unfiled}")
+
+      current_link = "[[t/#{function[2..]}/#{t[..-4]}]]"
+      new_link = "[[tk_#{t[7..-4]}]]"
+      update_links current_link, new_link
+
       puts "#{function.upcase}: #{t}"
     end
   end
@@ -66,6 +77,19 @@ class TaskMover
     def get_filed_tasks folder
       tasks = Dir.glob("#{folder}/*.md").map{|i| i[folder.length+1..]}
       tasks << 'q'
+    end
+
+    def update_links old_link, new_link
+      files = Dir.glob("#{@notes_folder}/**/*.md")
+
+      files.each do |f|
+        content = File.read(f)
+        new_content = content.gsub(old_link, new_link)
+        if content != new_content
+          File.write(f, new_content)
+          puts "Updated link in: #{f[@notes_folder.length+1..]}"
+        end
+      end
     end
 end
 
