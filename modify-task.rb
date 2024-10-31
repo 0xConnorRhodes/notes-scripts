@@ -2,6 +2,7 @@ require 'fileutils'
 require_relative 'modules/ruby/fzf'
 require 'date'
 
+
 class TaskMover
   def initialize
     @notes_folder =  File.join(File.expand_path('~'), 'notes')
@@ -10,7 +11,17 @@ class TaskMover
     @hold_folder = File.join(@notes_folder, 't', 'hold')
   end
 
-  def done_task
+  def file_task function
+
+    case function
+    when "done"
+      file_folder = @done_folder
+    when "drop"
+      file_folder = @drop_folder
+    when "hold"
+      file_folder = @hold_folder
+    end
+
     tasks = get_current_tasks
     chosen = fzf(tasks, '-m')
 
@@ -20,8 +31,8 @@ class TaskMover
 
     chosen.each do |t|
       t_filed = t.sub("tk_", file_date + '-')
-      FileUtils.move("#{@notes_folder}/#{t}", "#{@done_folder}/#{t_filed}")
-      puts "DONE: #{t}"
+      FileUtils.move("#{@notes_folder}/#{t}", "#{file_folder}/#{t_filed}")
+      puts "#{function.upcase}: #{t}"
     end
   end
 
@@ -40,5 +51,9 @@ taskmv = TaskMover.new
 
 case ARGV[0]
 when "done"
-  taskmv.done_task
+  taskmv.file_task "done"
+when "drop"
+  taskmv.file_task "drop"
+when "hold"
+  taskmv.file_task "hold"
 end
