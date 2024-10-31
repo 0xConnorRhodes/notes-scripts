@@ -6,7 +6,7 @@ options = {
   new_task: "ruby #{scripts_dir}/new-task.rb",
   list_tasks: "ruby #{scripts_dir}/list-tasks.rb",
   triage_tasks: "ruby #{scripts_dir}/triage-tasks.rb",
-  done_task: "lua5.4 #{scripts_dir}/modify-task.lua done",
+  done_task: "ruby #{scripts_dir}/modify-task.rb done",
   drop_task: "lua5.4 #{scripts_dir}/modify-task.lua drop",
   hold_task: "lua5.4 #{scripts_dir}/modify-task.lua hold",
   undone_tasks: "lua5.4 #{scripts_dir}/modify-task.lua undone",
