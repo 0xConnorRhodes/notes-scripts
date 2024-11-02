@@ -1,5 +1,6 @@
 require 'date'
 require_relative 'modules/ruby/TaskLister'
+require_relative 'modules/ruby/fzf'
 
 
 today = Date.today.strftime('%y%m%d').to_i
@@ -25,4 +26,13 @@ if start_tasks.length > 0
   output += start_tasks
 end
 
-puts output
+if ENV['TERMUX_VERSION']
+  puts output
+else
+  output.unshift('q')
+  output.unshift('ls')
+  output.reverse!
+  choices = fzf(output, '-m')
+  exit(0) if choices.include? 'q'
+  puts 'continue'
+end
