@@ -1,7 +1,6 @@
 require 'fileutils'
 require_relative 'modules/ruby/fzf'
 require 'date'
-require 'pry'
 
 
 class TaskMover
