@@ -62,7 +62,7 @@ class ListTasksMenu
         when 'edit'
           system("#{editor} \"#{task_file}\"")
         when 'done'
-          # TODO: function to move note and 
+          # TODO: function to move note and update links
           nil
         when 'drop'
           nil
