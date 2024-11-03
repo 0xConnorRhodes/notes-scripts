@@ -1,3 +1,4 @@
+require 'pry'
 class TaskLister
   def initialize
     @notes_folder = File.join(File.expand_path('~'), 'notes')
@@ -5,6 +6,7 @@ class TaskLister
 
   def get_tasks_by_date(key_string, date_limit)
     date_tasks = `rg -d 1 -l "#{key_string}" #{@notes_folder}/tk_*`.split("\n")
+    date_tasks -= date_tasks.grep(/(Connor Rhodes's conflicted copy)/)
 
     date_tasks.each do |t|
       # int value of due date from file
