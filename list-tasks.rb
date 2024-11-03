@@ -2,6 +2,7 @@ require 'date'
 require_relative 'modules/ruby/TaskLister'
 require_relative 'modules/ruby/FileTask'
 require_relative 'modules/ruby/fzf'
+require 'pry'
 
 class ListTasksMenu
   def initialize
@@ -66,18 +67,11 @@ class ListTasksMenu
         when 'done', 'drop', 'hold'
           @file_task.file_task task_file, operation
         end
-      # TODO: else
       else
         operation = fzf(['done', 'drop', 'hold'])[0]
         choices.each do |choice|
-          case operation
-          when 'done'
-            nil
-          when 'drop'
-            nil
-          when 'hold'
-            nil
-          end
+          task_file = "tk#{choice}.md"
+          @file_task.file_task task_file, operation
         end
       end
   end # end fzf_display_output
@@ -87,7 +81,7 @@ menu = ListTasksMenu.new
 
 if ENV['TERMUX_VERSION']
   raw_output = menu.generate_output
-  puts raw_output
+  menu.fzf_display_output(raw_output, editor: 'termux-open', preview: false)
 else
   loop do
     raw_output = menu.generate_output
