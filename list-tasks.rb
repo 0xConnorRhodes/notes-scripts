@@ -1,13 +1,14 @@
 require 'date'
 require_relative 'modules/ruby/TaskLister'
+require_relative 'modules/ruby/FileTask'
 require_relative 'modules/ruby/fzf'
-require 'pry'
 
 class ListTasksMenu
   def initialize
     @scripts_dir = File.expand_path('~/code/notes-scripts')
     @today = Date.today.strftime('%y%m%d').to_i
     @tasks = TaskLister.new
+    @file_task = FileTask.new
   end
 
   def generate_output
@@ -57,18 +58,15 @@ class ListTasksMenu
         exit(0)
       elsif choices.length == 1
         operation = fzf(['edit', 'done', 'drop', 'hold'])[0]
-        task_file = File.expand_path("~/notes/tk#{choices[0]}.md")
+        task_file = "tk#{choices[0]}.md"
+        task_path = File.expand_path("~/notes/#{task_file}")
         case operation
         when 'edit'
-          system("#{editor} \"#{task_file}\"")
-        when 'done'
-          # TODO: function to move note and update links
-          nil
-        when 'drop'
-          nil
-        when 'hold'
-          nil
+          system("#{editor} \"#{task_path}\"")
+        when 'done', 'drop', 'hold'
+          @file_task.file_task task_file, operation
         end
+      # TODO: else
       else
         operation = fzf(['done', 'drop', 'hold'])[0]
         choices.each do |choice|
@@ -82,8 +80,8 @@ class ListTasksMenu
           end
         end
       end
-  end
-end
+  end # end fzf_display_output
+end #end class
 
 menu = ListTasksMenu.new
 
