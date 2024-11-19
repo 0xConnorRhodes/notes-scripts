@@ -48,6 +48,30 @@ def get_quarter_date_range month_int
     end
 end
 
-q_dates = get_quarter_date_range(Date.today.strftime("%m").to_i)
+def get_meetings dates_arr
+    meetings = Dir.glob("#{NOTES_FOLDER}/mt_*")
+
+    meetings_in_q = meetings.select do |file|
+        if match = file.match(/mt_(\d{6})/)
+          number = match[1].to_i
+          number.between?(dates_arr[:start_date], dates_arr[:end_date])
+        else
+            false
+        end
+    end
+
+    meetings_in_q = meetings_in_q - meetings_in_q.grep(/Connor Rhodes's conflicted copy/)
+end
+
+def parse_meetings meetings_arr
+    meetings_hash = {}
+    return meetings_hash
+end
+
+q_dates = get_quarter_date_range Date.today.strftime("%m").to_i
+
+meetings = get_meetings q_dates
+
+# TODO: write parse_meetings() to return dict with relevant meeting data: remove_personal, customer, internal, personal, trips, ons_dt, ons_on
 
 binding.pry
