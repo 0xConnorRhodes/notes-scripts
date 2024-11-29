@@ -70,11 +70,13 @@ class TaskMover
   private
     def get_current_tasks
       tasks = Dir.glob("#{@notes_folder}/tk*.md").map{|i| i[@notes_folder.length+1..]}
+      tasks -= tasks.grep(/(Connor Rhodes's conflicted copy)/)
       tasks << 'q'
     end
 
     def get_filed_tasks folder
       tasks = Dir.glob("#{folder}/*.md").map{|i| i[folder.length+1..]}
+      tasks -= tasks.grep(/(Connor Rhodes's conflicted copy)/)
       tasks << 'q'
     end
 
