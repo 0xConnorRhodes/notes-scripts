@@ -10,7 +10,15 @@ class TaskLister
 
     date_tasks.each do |t|
       # int value of due date from file
-      task_date = File.readlines(t).grep(/#{key_string}/)[0].match(/\d{6}/)[0].to_i
+      task_date = File.readlines(t).grep(/#{key_string}/)[0].match(/\d{6}/)
+
+      unless task_date.nil?
+        task_date = task_date[0].to_i
+      else
+        puts "WARNING: Task #{t} has invalid date format"
+        sleep 3
+        next
+      end
 
       date_tasks -= Array(t) unless task_date <= date_limit
     end

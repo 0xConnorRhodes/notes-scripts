@@ -2,7 +2,6 @@ require 'date'
 require_relative 'modules/ruby/TaskLister'
 require_relative 'modules/ruby/FileTask'
 require_relative 'modules/ruby/fzf'
-require 'pry'
 
 class ListTasksMenu
   def initialize
