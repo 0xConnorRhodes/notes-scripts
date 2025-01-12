@@ -6,7 +6,17 @@ remote_dir = ENV['REMOTE_DIR']
 attachments = Dir.glob(File.join(notes_dir, 'zattachments', '*'))
 attachments = attachments.map {|f| File.basename(f)}
 
+remote_files = `rsync --list-only '#{remote_dir}/'`.split("\n").map { |line| line.split.last }
+
 attachments.each do |attachment|
+  remote_filename = attachment.downcase.gsub(' ', '-')
+  remote_filename = remote_filename.gsub(/[\(\)\[\]'"]/, '') # strip problematic characters
+
+  if remote_files.include?(remote_filename)
+    puts "Warning: #{remote_filename} already exists on remote, exiting"
+    exit 1
+  end
+
   upload = false
   file_data = {
     wiki_link_files: `rg -F -l "zattachments/#{attachment}]]" "#{notes_dir}"`.split("\n"),
