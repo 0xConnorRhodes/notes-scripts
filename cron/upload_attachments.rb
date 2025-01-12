@@ -32,11 +32,13 @@ attachments.each do |attachment|
 
   file_data[:wiki_link_files].each do |file_path|
     file_content = File.read(file_path)
-    link = "![[zattachments/#{attachment}]]"
-    if file_content.include?(link)
-      puts "replacing #{link} in #{file_path}"
+    # match any amount of ../ in relative path
+    pattern = /!\[\[(?:\.\.\/)*zattachments\/#{attachment}\]\]/
+    matches = file_content.scan(pattern)
+    matches.uniq.each do |match|
+      puts "replacing #{match} in #{file_path}"
       new_link = "![](#{ENV['STATIC_URL']}/#{remote_filename}?#{ENV['ACCESS_TOKEN']})"
-      File.write(file_path, file_content.gsub(link, new_link))
+      File.write(file_path, file_content.gsub(match, new_link))
       upload = true
     end
   end
