@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require 'dotenv/load'
 
 notes_dir = ENV['NOTES_DIR']
