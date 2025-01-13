@@ -15,6 +15,6 @@ local fileChoiceStr = io.popen(
 
 local fileChoiceStrip = fileChoiceStr:sub(1, #fileChoiceStr-1)
 
-local command = ('termux-open "%s"'):format(notesPath..'/'..fileChoiceStrip..'.md')
--- local command = ('termux-open "%s"'):format('znotes://noted/'..fileChoiceStrip..'.md')
+-- local command = ('termux-open "%s"'):format(notesPath..'/'..fileChoiceStrip..'.md')
+local command = ('termux-open "%s"'):format('znotes://notes/'..fileChoiceStrip..'.md')
 os.execute(command)
