@@ -1,6 +1,11 @@
 #!/usr/bin/env ruby
 
+require_relative 'upload_attachments'
+require 'pry'
+
 notes_path = File.expand_path('~/notes')
+
+upload_attachments
 
 Dir.chdir(notes_path) do
   system('git pull')
