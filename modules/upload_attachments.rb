@@ -1,9 +1,4 @@
 def upload_attachments
-  # notes_dir = $notes_dir
-  # remote_dir = $remote_dir
-  # static_url = $static_url
-  # access_token = $access_token
-
   notes_dir = $notes_path
   remote_dir = ENV['REMOTE_DIR']
   static_url = ENV['STATIC_URL']
@@ -18,7 +13,11 @@ def upload_attachments
 
   attachments = attachments.map {|f| File.basename(f)}
 
-  remote_files = `rsync --list-only '#{remote_dir}/'`.split("\n").map { |line| line.split.last }
+  remote_files = `rsync --list-only '#{remote_dir}1/'`.split("\n").map { |line| line.split.last }
+  if remote_files.empty?
+    puts "Error listing remote files. Do you have network access?"
+    exit 1
+  end
 
   attachments.each do |attachment|
     remote_filename = attachment.downcase.gsub(' ', '-')

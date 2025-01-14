@@ -6,6 +6,8 @@ require_relative 'modules/upload_attachments'
 
 $notes_path = File.expand_path('~/notes')
 
+require 'pry'
+
 upload_attachments
 
 Dir.chdir($notes_path) do
