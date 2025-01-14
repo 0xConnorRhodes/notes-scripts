@@ -1,13 +1,14 @@
 #!/usr/bin/env ruby
 
-require_relative 'upload_attachments'
-require 'pry'
+require 'dotenv/load'
+Dotenv.load(File.join(File.dirname(__FILE__), '.env'))
+require_relative 'modules/upload_attachments'
 
-notes_path = File.expand_path('~/notes')
+$notes_path = File.expand_path('~/notes')
 
 upload_attachments
 
-Dir.chdir(notes_path) do
+Dir.chdir($notes_path) do
   system('git pull')
 
   system('git add .')

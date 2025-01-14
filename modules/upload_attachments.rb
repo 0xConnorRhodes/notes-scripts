@@ -1,12 +1,16 @@
-#!/usr/bin/env ruby
-
 def upload_attachments
-  require 'dotenv/load'
-  
-  notes_dir = ENV['NOTES_DIR']
+  # notes_dir = $notes_dir
+  # remote_dir = $remote_dir
+  # static_url = $static_url
+  # access_token = $access_token
+
+  notes_dir = $notes_path
   remote_dir = ENV['REMOTE_DIR']
+  static_url = ENV['STATIC_URL']
+  access_token = ENV['ACCESS_TOKEN']
 
   attachments = Dir.glob(File.join(notes_dir, 'zattachments', '*'))
+
   if attachments.empty?
     puts "No local attachments"
     return
@@ -51,7 +55,7 @@ def upload_attachments
       matches = file_content.scan(pattern)
       matches.uniq.each do |match|
         puts "replacing #{match} in #{file_path}"
-        new_link = "![](#{ENV['STATIC_URL']}/#{remote_filename}?#{ENV['ACCESS_TOKEN']})"
+        new_link = "![](#{static_url}/#{remote_filename}?#{access_token})"
         File.write(file_path, file_content.gsub(match, new_link))
         upload = true
       end
@@ -64,7 +68,7 @@ def upload_attachments
       matches = file_content.scan(pattern)
       matches.uniq.each do |match|
         puts "replacing #{match} in #{file_path}"
-        new_link = "![](#{ENV['STATIC_URL']}/#{remote_filename}?#{ENV['ACCESS_TOKEN']})"
+        new_link = "![](#{static_url}/#{remote_filename}?#{access_token})"
         File.write(file_path, file_content.gsub(match, new_link))
         upload = true
       end
@@ -76,7 +80,7 @@ def upload_attachments
       search_string = "![[#{attachment}]]"
       if file_content.include?(search_string)
         puts "replacing #{search_string} in #{file_path}"
-        new_link = "![](#{ENV['STATIC_URL']}/#{remote_filename}?#{ENV['ACCESS_TOKEN']})"
+        new_link = "![](#{static_url}/#{remote_filename}?#{access_token})"
         File.write(file_path, file_content.gsub(search_string, new_link))
         upload = true
       end
