@@ -1,4 +1,6 @@
-require_relative "modules/ruby/fzf"
+#!/usr/bin/env ruby
+
+require "fzf"
 
 scripts_dir = File.expand_path("~/code/notes-scripts")
 

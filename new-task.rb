@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require 'highline'
 require 'date'
 require_relative "modules/ruby/fzf"
