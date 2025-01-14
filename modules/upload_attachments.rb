@@ -13,7 +13,7 @@ def upload_attachments
 
   attachments = attachments.map {|f| File.basename(f)}
 
-  remote_files = `rsync --list-only '#{remote_dir}1/'`.split("\n").map { |line| line.split.last }
+  remote_files = `rsync --list-only '#{remote_dir}/'`.split("\n").map { |line| line.split.last }
   if remote_files.empty?
     puts "Error listing remote files. Do you have network access?"
     exit 1
