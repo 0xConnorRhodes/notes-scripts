@@ -1,5 +1,3 @@
-require 'digest'
-
 def upload_attachments
   notes_dir = $notes_path
   remote_dir = ENV['REMOTE_DIR']
@@ -22,7 +20,7 @@ def upload_attachments
   end
 
   attachments.each do |attachment|
-    remote_filename = Digest::MD5.hexdigest(attachment)
+    remote_filename = Time.now.utc.strftime("%Y%m%d%H%M%S-%L")
     remote_filename += File.extname(attachment).downcase # preserve file extension
 
     if remote_files.include?(remote_filename)
