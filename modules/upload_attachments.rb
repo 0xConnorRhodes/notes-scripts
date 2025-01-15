@@ -1,3 +1,5 @@
+require 'digest'
+
 def upload_attachments
   notes_dir = $notes_path
   remote_dir = ENV['REMOTE_DIR']
@@ -20,8 +22,8 @@ def upload_attachments
   end
 
   attachments.each do |attachment|
-    remote_filename = attachment.downcase.gsub(' ', '-')
-    remote_filename = remote_filename.gsub(/[\(\)\[\]'"]/, '') # strip problematic characters
+    remote_filename = Digest::MD5.hexdigest(attachment)
+    remote_filename += File.extname(attachment).downcase # preserve file extension
 
     if remote_files.include?(remote_filename)
       puts "Warning: #{remote_filename} already exists on remote, exiting"
@@ -43,9 +45,6 @@ def upload_attachments
       `rm "#{notes_dir}/zattachments/#{attachment}"` if present_files.count == 0
       next
     end
-
-    remote_filename = attachment.downcase.gsub(' ', '-')
-    remote_filename = remote_filename.gsub(/[\(\)\[\]'"]/, '') # strip problematic characters
 
     file_data[:wiki_link_files].each do |file_path|
       file_content = File.read(file_path)
