@@ -98,6 +98,8 @@ end
 
 if ENV['TERMUX_VERSION']
   exec("termux-open \"#{File.join(NOTES_FOLDER, meeting_file+'.md')}\"")
+elsif RUBY_PLATFORM.include?("darwin")
+  exec("open \"obsidian://open?vault=notes&file=#{meeting_file}.md\"")
 else
   exec("nvim \"#{File.join(NOTES_FOLDER, meeting_file+'.md')}\"")
 end
