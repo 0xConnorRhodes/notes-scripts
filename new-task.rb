@@ -122,6 +122,8 @@ file_content = new_task.render_file_content(task_data, task_meta)
 task_file = new_task.create_task_file(task_name: task_data[:task_name], file_content: file_content)
 if ENV['TERMUX_VERSION']
   exec("termux-open \"#{task_file}\"")
+elsif RUBY_PLATFORM.include?("darwin")
+  exec("open \"obsidian://open?vault=notes&file=#{File.basename(task_file)}\"")
 else
   exec("nvim \"#{task_file}\"")
 end
