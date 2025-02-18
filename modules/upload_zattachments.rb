@@ -1,4 +1,6 @@
-def upload_attachments
+# upload attachments in the zattachments folder (1 folder for entire notes repo)
+
+def upload_zattachments
   notes_dir = $notes_path
   remote_dir = ENV['REMOTE_DIR']
   static_url = ENV['STATIC_URL']
