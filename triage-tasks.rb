@@ -56,7 +56,7 @@ class TasksViewer
     when 'done', 'drop', 'hold'
       @chosen_tasks.each do |task|
         move_from = File.join(@notes_folder, "tk_#{task}.md")
-        move_to = File.join(@notes_folder, '_tk', @operation, "#{@date}-#{task}.md")
+        move_to = File.join(@notes_folder, 't', @operation, "#{@date}-#{task}.md")
       
         FileUtils.mv(move_from, move_to)
       
