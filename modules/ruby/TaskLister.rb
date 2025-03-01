@@ -1,4 +1,3 @@
-require 'pry'
 class TaskLister
   def initialize
     @notes_folder = File.join(File.expand_path('~'), 'notes')

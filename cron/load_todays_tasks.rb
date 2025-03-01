@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require 'date'
 require_relative '../modules/ruby/TaskLister'
 require_relative '../modules/ruby/OOMarkdown'
