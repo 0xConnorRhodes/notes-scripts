@@ -35,7 +35,7 @@ end_date = get_date_input("end date")
 print "travel description: "
 description = gets.chomp.strip
 
-filename = "mt_#{start_date}-#{end_date} vTravel #{description}.md"
+filename = "mt_#{start_date}-#{end_date} Travel #{description}.md"
 file_path = File.join($notes_path, filename)
 
 template = <<-ERB
