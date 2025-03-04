@@ -1,77 +1,156 @@
+#!/usr/bin/env ruby
+
 require 'date'
+require 'set'
 require 'pry'
 
-NOTES_FOLDER = File.expand_path("~/notes")
 
-def get_quarter_date_range month_int
-    year_str = Date.today.strftime("%y")
-    quarter_ranges = {
-        q1: [2, 3, 4],
-        q2: [5, 6, 7],
-        q3: [8, 9, 10],
-        q4: [11, 12, 1]
-    }
+class Report
+	def initialize(month_int)
+		@notes_folder = File.expand_path("~/notes")
+		@month_int = month_int
+		@quarter_info = get_quarter_date_range(month_int)
+	end
 
-    if quarter_ranges[:q1].include? month_int
-        return {
-            quarter: "FY#{year_str.to_i+1}Q1",
-            start_date: (year_str + '0201').to_i, 
-            end_date: (year_str + '0430').to_i
-        }
-    elsif quarter_ranges[:q2].include? month_int
-        return {
-            quarter: "FY#{year_str.to_i+1}Q2",
-            start_date: (year_str + '0501').to_i, 
-            end_date: (year_str + '0731').to_i
-        }
-    elsif quarter_ranges[:q3].include? month_int
-        return {
-            quarter: "FY#{year_str.to_i+1}Q3",
-            start_date: (year_str + '0801').to_i, 
-            end_date: (year_str + '1031').to_i
-        }
-    elsif quarter_ranges[:q4].include? month_int
-        puts 'q4'
-        if month_int == 1
-            return {
-                quarter: "FY#{year_str.to_i}Q4",
-                start_date: ("#{year_str.to_i-1}" + '1101').to_i, 
-                end_date: ("#{year_str.to_i}" + '0131').to_i
-            }
-        else
-            return {
-                quarter: "FY#{year_str.to_i+1}Q4",
-                start_date: (year_str + '1101').to_i, 
-                end_date: ("#{year_str.to_i+1}" + '0131').to_i
-            }
-        end
-    end
+	def process_travel_data
+		travel_files = get_travel_data()
+		num_trips = travel_files.length
+		all_travel_dates = Set.new  # Track all unique dates
+		purposes = []
+		
+		travel_files.each do |file|
+			basename = File.basename(file)
+			
+			# Extract date range and calculate days
+			if basename =~ /^mt_(\d{6})-(\d{6}) Travel/
+				start_date_str = $1
+				end_date_str = $2
+				
+				# Convert YYMMDD to Date objects
+				start_year = "20" + start_date_str[0,2]
+				start_month = start_date_str[2,2]
+				start_day = start_date_str[4,2]
+				
+				end_year = "20" + end_date_str[0,2]
+				end_month = end_date_str[2,2]
+				end_day = end_date_str[4,2]
+				
+				start_date = Date.new(start_year.to_i, start_month.to_i, start_day.to_i)
+				end_date = Date.new(end_year.to_i, end_month.to_i, end_day.to_i)
+				
+				# Add each date in the range to the set
+				(start_date..end_date).each do |date|
+					all_travel_dates.add(date)
+				end
+			end
+			
+			# Extract purpose
+			if basename =~ /^mt_\d{6}-\d{6} Travel (.+)\.md$/
+				purposes << $1
+			end
+		end
+		
+		return {
+			num_trips: num_trips,
+			total_days: all_travel_dates.size,
+			purposes: purposes
+		}
+	end
+
+	private
+
+	def get_quarter_date_range month_int
+	    year_str = Date.today.strftime("%y")
+	    quarter_ranges = {
+	        q1: [2, 3, 4],
+	        q2: [5, 6, 7],
+	        q3: [8, 9, 10],
+	        q4: [11, 12, 1]
+	    }
+
+	    if quarter_ranges[:q1].include? month_int
+	        return {
+	            quarter: "FY#{year_str.to_i+1}Q1",
+	            start_date: (year_str + '0201').to_i, 
+	            end_date: (year_str + '0430').to_i
+	        }
+	    elsif quarter_ranges[:q2].include? month_int
+	        return {
+	            quarter: "FY#{year_str.to_i+1}Q2",
+	            start_date: (year_str + '0501').to_i, 
+	            end_date: (year_str + '0731').to_i
+	        }
+	    elsif quarter_ranges[:q3].include? month_int
+	        return {
+	            quarter: "FY#{year_str.to_i+1}Q3",
+	            start_date: (year_str + '0801').to_i, 
+	            end_date: (year_str + '1031').to_i
+	        }
+	    elsif quarter_ranges[:q4].include? month_int
+	        puts 'q4'
+	        if month_int == 1
+	            return {
+	                quarter: "FY#{year_str.to_i}Q4",
+	                start_date: ("#{year_str.to_i-1}" + '1101').to_i, 
+	                end_date: ("#{year_str.to_i}" + '0131').to_i
+	            }
+	        else
+	            return {
+	                quarter: "FY#{year_str.to_i+1}Q4",
+	                start_date: (year_str + '1101').to_i, 
+	                end_date: ("#{year_str.to_i+1}" + '0131').to_i
+	            }
+	        end
+	    end
+	end
+
+	def get_travel_data
+		travel_files = []
+		Dir.glob(File.join(@notes_folder, "mt_*")).each do |file|
+			if File.basename(file) =~ /^mt_(\d{6})-(\d{6}) Travel/
+				start_date = $1.to_i
+				end_date = $2.to_i
+				
+				# Check if either date is within the quarter range
+				if (start_date >= @quarter_info[:start_date] && start_date <= @quarter_info[:end_date]) ||
+				   (end_date >= @quarter_info[:start_date] && end_date <= @quarter_info[:end_date])
+					travel_files << file
+				end
+			end
+		end
+		
+		return travel_files
+	end
 end
 
-def get_meetings dates_arr
-    meetings = Dir.glob("#{NOTES_FOLDER}/mt_*")
+report = Report.new(Date.today.strftime("%m").to_i)
 
-    meetings_in_q = meetings.select do |file|
-        if match = file.match(/mt_(\d{6})/)
-          number = match[1].to_i
-          number.between?(dates_arr[:start_date], dates_arr[:end_date])
-        else
-            false
-        end
-    end
-
-    meetings_in_q = meetings_in_q - meetings_in_q.grep(/Connor Rhodes's conflicted copy/)
-end
-
-def parse_meetings meetings_arr
-    meetings_hash = {}
-    return meetings_hash
-end
-
-q_dates = get_quarter_date_range Date.today.strftime("%m").to_i
-
-meetings = get_meetings q_dates
-
-# TODO: write parse_meetings() to return dict with relevant meeting data: remove_personal, customer, internal, personal, trips, ons_dt, ons_on
+travel = report.process_travel_data
 
 binding.pry
+
+# def get_meetings dates_arr
+#     meetings = Dir.glob("#{NOTES_FOLDER}/mt_*")
+
+#     meetings_in_q = meetings.select do |file|
+#         if match = file.match(/mt_(\d{6})/)
+#           number = match[1].to_i
+#           number.between?(dates_arr[:start_date], dates_arr[:end_date])
+#         else
+#             false
+#         end
+#     end
+
+#     meetings_in_q = meetings_in_q - meetings_in_q.grep(/Connor Rhodes's conflicted copy/)
+# end
+
+# def parse_meetings meetings_arr
+#     meetings_hash = {}
+#     return meetings_hash
+# end
+
+# q_dates = get_quarter_date_range Date.today.strftime("%m").to_i
+
+# meetings = get_meetings q_dates
+
+# # TODO: write parse_meetings() to return dict with relevant meeting data: remove_personal, customer, internal, personal, trips, ons_dt, ons_on
