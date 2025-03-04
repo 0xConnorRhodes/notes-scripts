@@ -1,0 +1,66 @@
+#!/usr/bin/env ruby
+
+require 'fzf'
+
+def get_date_input(prompt)
+  print "#{prompt}: "
+  date_input = gets.chomp
+  
+  if date_input.length == 4  # MMDD format
+    mm_dd = date_input
+    current_year = Time.now.year
+    current_year_short = current_year.to_s[-2..-1]  # Get last two digits of year
+    
+    # Convert input to comparable format (MMDD)
+    current_date_mmdd = Time.now.strftime("%m%d")
+    
+    # If the input date is earlier than current date, assume it's for next year
+    if mm_dd < current_date_mmdd
+      year_short = (current_year + 1).to_s[-2..-1]
+    else
+      year_short = current_year_short
+    end
+    
+    return "#{year_short}#{mm_dd}"
+  else
+    return date_input  # Assume it's already in YYMMDD format
+  end
+end
+
+$notes_path = File.expand_path('~/notes')
+
+start_date = get_date_input("start date")
+end_date = get_date_input("end date")
+
+print "travel description: "
+description = gets.chomp.strip
+
+filename = "mt_#{start_date}-#{end_date} vTravel #{description}.md"
+file_path = File.join($notes_path, filename)
+
+template = <<-ERB
+# Meta
+- Description: #{description}
+- Dates: #{start_date} - #{end_date}
+
+## Logistics
+
+
+## Itinerary
+- 
+
+## Notes
+- 
+
+ERB
+
+File.open(file_path, 'w') do |file|
+  file.write(template)
+end
+
+termux_test = ENV['TERMUX_APP_PID'] ? true : false
+if termux_test
+  system("termux-open \"#{file_path}\"")
+else
+  system("nvim \"#{file_path}\"")
+end
