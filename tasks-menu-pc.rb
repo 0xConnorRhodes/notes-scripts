@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 
-require "fzf"
+# TODO: programatically add fzf to $LOAD_PATH
+#require "fzf"
+require_relative "../ruby-modules/fzf"
 
 scripts_dir = File.expand_path("~/code/notes-scripts")
 
